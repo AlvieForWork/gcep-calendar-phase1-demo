@@ -520,10 +520,11 @@ window.Forms = (function () {
     card.onclick = e => e.stopPropagation();
 
     const ME = window.DEMO_DATA.ME;
+    /* 建立者那一列的回覆狀態就是他自己的 rsvp，所以他改回覆時徽章與統計都會跟著動 */
     const people = ev.participants || (ev.participants = isOwner
-      ? [{ name: ME, dept: '', owner: true, rsvp: 'yes' }, { name: 'Lily', rsvp: 'no' }, { name: 'Amy Brown', rsvp: 'none' }]
+      ? [{ name: ME, dept: '', owner: true, rsvp: ev.rsvp }, { name: 'Lily', rsvp: 'no' }, { name: 'Amy Brown', rsvp: 'none' }]
       : [{ name: ev.organizerName, dept: '', owner: true, rsvp: 'yes' }, { name: 'Lily', rsvp: 'no' }, { name: ME, rsvp: ev.rsvp }]);
-    const me = people.find(p => p.name === ME && !p.owner);
+    const me = people.find(p => p.name === ME);      // 建立者也算，他也要能回覆
     /* 出席統計（3.12）＋ 參與人列（徽章＝回覆狀態） */
     const peopleHTML = () => {
       const cnt = { yes: 0, no: 0, none: 0 };
@@ -552,8 +553,8 @@ window.Forms = (function () {
           <div class="sub">建立者：${ev.organizerName}</div></span></div>
       </div>`;
 
-    /* 是否參加？——我是參與人且不是主辦人才顯示（#C24 筆記） */
-    if (!isOwner) {
+    /* 是否參加？——不論是不是建立者都顯示；差別只在預設值（建立者預設「參加」） */
+    {
       const bar = el('div', 'rsvp');
       bar.dataset.spec = 'rsvp';
       bar.innerHTML = '<span class="q">是否參加？</span>';
@@ -567,7 +568,8 @@ window.Forms = (function () {
           const box = card.querySelector('.people-box');
           if (box) box.innerHTML = peopleHTML();      // 徽章與出席統計即時更新（SRS 6.1）
           window.GCEP.refresh();                      // 月曆卡片樣式同步（3.10）
-          log(`回覆「${label}」→ 我的徽章改為 ${v === 'yes' ? '打勾' : v === 'no' ? '打叉' : '無'}、出席統計重算、月曆卡片改為 ${v === 'yes' ? '實心' : v === 'no' ? '線框＋刪除線' : '線框'}`);
+          log(`回覆「${label}」→ 我的徽章改為 ${v === 'yes' ? '打勾' : v === 'no' ? '打叉' : '無'}、出席統計重算、月曆卡片改為 ${v === 'yes' ? '實心' : v === 'no' ? '線框＋刪除線' : '線框'}` +
+            (isOwner ? '（我是建立者，不寄通知給自己）' : '（通知主辦人）'));
           code(v === 'no' ? 'C15' : v === 'yes' ? 'C16' : 'C14');
         };
         bar.appendChild(b);

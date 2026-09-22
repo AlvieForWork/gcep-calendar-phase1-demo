@@ -111,10 +111,12 @@
   }
 
   /* ════════════ FullCalendar ════════════ */
+  /* 卡片樣式只看「這個使用者的回覆狀態」，不判斷是誰建立的。
+     建立者預設看到 Filled，是因為他的回覆狀態預設就是「參加」。 */
   function styleOf(e) {
-    if (e.organizer === 'me' || e.rsvp === 'yes') return 'ev-fill';
-    if (e.rsvp === 'no') return 'ev-strike';
-    return 'ev-outline';
+    if (e.rsvp === 'yes') return 'ev-fill';       // 參加
+    if (e.rsvp === 'no') return 'ev-strike';      // 否 → 線框＋刪除線
+    return 'ev-outline';                          // 不確定／還沒回覆
   }
   const fcEvents = () => state.filterOn ? EVENTS.map(e => ({
     id: e.id, title: e.title || '無標題', start: e.start, end: e.end, allDay: e.allDay,
