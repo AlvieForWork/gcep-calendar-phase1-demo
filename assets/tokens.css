@@ -1,0 +1,55 @@
+/* GCEP 行事曆 Phase 1 Demo — Token
+ *
+ * 命名規則：
+ *   --primary、--gray-f5 …  ＝ 前端專案 quasar.variables.scss 的同名變數（$primary、$gray-f5）
+ *   --cal-*                  ＝ Figma「GCEP Calendar」collection 的 color/cal/*、size/*、radius/*
+ *   --gap-*                  ＝ ⚠️ Figma 與 quasar 都沒有的值（設計系統缺口，規格模式會標出來）
+ *
+ * 實作時：顏色一律用 $xxx 變數（tpColor 包過才能換主題），不要抄這裡的色碼。
+ */
+:root {
+  /* ── quasar.variables.scss ── */
+  --primary: #ff8a4f;        /* $primary */
+  --positive: #ff6416;       /* $positive */
+  --white: #ffffff;          /* $white */
+  --negative: #ff5252;       /* $negative */
+  --orange-9965: #ff9965;    /* $orange-9965 主導覽列 active icon */
+  --dark-blue: #3f576a;      /* $dark-blue 視窗外殼 */
+  --unread-badge: #ff5252;   /* $unread-badge */
+  --gray-f5: #f5f5f5;
+  --gray-eb: #ebebeb;
+  --gray-dc: #dcdcdc;
+  --gray-c9: #c9c9c9;
+  --gray-a7: #a7a7a7;
+  --gray-91: #919191;
+  --gray-7f: #7f7f7f;
+  --gray-5b: #5b5b5b;
+  --gray-37: #373737;
+  --gray-ba: #c2d2de;        /* $gray-ba 側邊導覽 */
+  --black: #000000;
+  --bg-gradient: linear-gradient(#fefeff, #eceff6);   /* $bg-gradient */
+
+  /* ── Figma GCEP Calendar ── */
+  --cal-01: #ff6416;               /* color/cal/01 —— Phase 1 個人行事曆的顏色 */
+  --cal-day-cell-height: 100px;    /* size/day-cell-height */
+  --cal-day-card-height: 20px;     /* size/day-card-height */
+  --cal-radius-day-card: 4px;      /* radius/day-card */
+  --cal-radius-pill: 17px;         /* radius/pill */
+  --cal-radius-menu: 6px;          /* radius/menu */
+  --cal-radius-modal: 8px;         /* radius/modal（下拉、清單視窗外框同為 8） */
+  --cal-menu-row-height: 33px;     /* size/menu-row-height */
+
+  /* ── ⚠️ 設計系統缺口：稿上有、變數表沒有 ── */
+  --gap-today-bg: #fcf8e3;                 /* 今日淡黃底（#A01 Day 元件） */
+  --gap-hover-overlay: rgba(0, 0, 0, .1);  /* 實心卡片 hover 疊色（#A10 筆記） */
+  --gap-hover-soft: rgba(0, 0, 0, .05);    /* 圓形 icon 按鈕 hover（#A16 筆記） */
+  --gap-shadow-pop: 0 1px 4px rgba(0, 0, 0, .2);  /* 下拉／清單視窗陰影 */
+
+  /* ── 版面（量自 #A01） ── */
+  --shell-pad-top: 42px;
+  --main-pad: 30px 32px 20px 32px;   /* 09-17 已統一：Main Content padding */
+  --main-radius: 16px;
+  --time-axis-w: 40px;               /* #A03 筆記：左側時間軸固定 40px */
+  --slot-h: 44px;                    /* 週／日視圖一小時一格 */
+  --font: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}

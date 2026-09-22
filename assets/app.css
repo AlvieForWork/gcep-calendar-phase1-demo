@@ -1,0 +1,459 @@
+/* GCEP 行事曆 Phase 1 Demo — 版面與元件樣式
+ * 數值全部量自 Figma Phase 1 頁（#A01～#A16、#B01），token 定義在 tokens.css。
+ */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--gray-37);
+  background: var(--dark-blue);
+  min-width: 456px;                 /* #A12：最小寬度 456px */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;                 /* 網頁本身不捲，只有行事曆內部捲 */
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+[hidden] { display: none !important; }
+
+/* ═════════ 外框 ═════════ */
+.shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 8px 8px 8px 0;
+}
+.shell.is-a12 { max-width: 456px; }   /* ?s=A12：把畫面縮到最小寬度 */
+
+/* ── 左側導覽列（位置照 #A01 量） ── */
+.nav { position: relative; flex: 0 0 71px; overflow: hidden; }   /* 視窗拉矮時不撐高網頁 */
+.nav .user-area {
+  position: absolute; left: 9px; top: 34px; width: 48px; height: 94px;
+  border-radius: 24px; background: rgba(255, 255, 255, .25);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+}
+.nav .avatar { position: absolute; left: 11px; top: 36px; width: 44px; height: 44px; }
+.nav .avatar svg { display: block; }
+.nav .online { position: absolute; left: 45px; top: 70px; width: 11px; height: 11px; border-radius: 50%; background: #1ce249; }
+.nav .qr { position: absolute; left: 21px; top: 90px; line-height: 0; }
+.nav .nav-list {
+  position: absolute; left: 8px; top: 128px; width: 52px; height: 396px;
+  padding: 26px 0; display: flex; flex-direction: column; align-items: center; gap: 26px;
+  border-bottom: 1px solid rgba(194, 210, 222, .5);
+  overflow: hidden;
+}
+.nav .nav-list.bottom { top: 536px; height: auto; padding: 0; border: 0; overflow: visible; }
+.nav .nav-ic { position: relative; width: 32px; height: 32px; flex: 0 0 32px; line-height: 0; cursor: pointer; }
+.nav .nav-ic svg { position: absolute; left: 0; top: 0; }
+.nav .nav-ic.app svg { top: -8px; }
+
+/* ── Main Content ── */
+.main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: var(--main-pad);
+  border-radius: var(--main-radius);
+  background: var(--bg-gradient);
+}
+.win-ctrl { position: absolute; top: 7px; right: 8px; display: flex; gap: 6px; }
+.win-ctrl span { width: 36px; height: 29px; display: grid; place-items: center; border-radius: 4px; }
+
+/* ── 標題列＋日期切換列（固定區） ── */
+.head { display: flex; flex-direction: column; gap: 20px; flex: 0 0 auto; }
+.title-box { padding: 6px 10px 6px 12px; align-self: flex-start; }
+.title { margin: 0; font-size: 24px; line-height: 36px; font-weight: 600; color: var(--gray-37); }
+
+.datenav { display: flex; flex-direction: column; gap: 12px; }
+.datenav-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.grp { display: flex; align-items: center; gap: 16px; }
+.actions { gap: 12px; margin-left: auto; }
+.divider { height: 1px; background: var(--gray-eb); }
+.anchor { position: relative; }
+
+/* 窄版（#A12）：第一列 今天＋箭頭＋右側動作；日期與檢視選單換到第二列 */
+.is-narrow .grp-a { order: 1; }
+.is-narrow .actions { order: 2; }
+.is-narrow .grp-b { order: 3; flex-basis: 100%; }
+
+.date-chip {
+  height: 36px;
+  border-radius: 100px;
+  background: var(--white);
+  font-size: 14px; line-height: 20px; color: var(--gray-5b);
+  white-space: nowrap;
+}
+.chip-today { min-width: 76px; padding: 0 12px; border: 1px solid var(--gray-c9); }
+.chip-date  { padding: 8px 24px; border: 1px solid var(--gray-dc); }
+.date-chip:hover { background: var(--gray-eb); }                          /* #A16 */
+
+.round-btn { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+.round-btn:hover { background: var(--gap-hover-soft); }                  /* #A16 */
+.round-btn svg { display: block; }
+.filter-btn { width: 32px; height: 32px; }
+
+/* 前端專案現成的 .selectBtn（_shareClass.scss），量出來的 pill 跟它一致 */
+.selectBtn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  background: var(--gray-f5);
+  border-radius: 17px;
+  color: var(--gray-5b);
+  font-size: 14px; line-height: 1.5;
+  padding: 8px 12px 8px 16px;             /* 稿：右 12（放箭頭），.selectBtn 原本左右 16 */
+  white-space: nowrap;
+}
+.selectBtn i { line-height: 0; }
+
+/* 前端專案現成的 .flatBtn（_shareClass.scss） */
+.flatBtn { color: var(--primary); font-size: 15px; line-height: 23px; font-weight: 500; white-space: nowrap; }
+.flatBtn:hover { color: var(--positive); }
+
+/* ── 下拉選單（#A02） ── */
+.menu {
+  position: absolute; z-index: 40;
+  background: var(--white);
+  border: 1px solid var(--gray-eb);
+  border-radius: var(--cal-radius-modal);
+  box-shadow: var(--gap-shadow-pop);
+}
+.view-menu { top: calc(100% + 4px); left: -8px; width: 58px; padding: 6px; }
+.view-menu button {
+  display: block; width: 100%; height: var(--cal-menu-row-height);
+  border-radius: var(--cal-radius-menu);
+  font-size: 14px; line-height: 21px; color: var(--gray-5b);
+}
+.view-menu button.is-on { background: var(--gray-f5); }
+.view-menu button:hover { background: var(--gray-f5); }
+
+/* ── 篩選清單（#B01） ── */
+.filter-menu { top: calc(100% + 5px); right: 0; width: 260px; padding: 16px 8px; }
+.fm-group { padding: 8px 0 4px 4px; font-size: 12px; line-height: 16px; color: var(--gray-7f); }
+.fm-item { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 4px; text-align: left; }
+/* 篩選清單的項目沒有 hover 底色；標題被截斷時才顯示 Tooltip（SRS 2.5／3.13） */
+.fm-check { line-height: 0; flex: 0 0 18px; }
+.fm-name {
+  flex: 1; min-width: 0;
+  font-size: 16px; line-height: 24px; color: var(--gray-37);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;       /* #B01 文字溢出 */
+}
+
+/* ── Date Picker（#A09，稿註明「樣式僅作為示意」） ── */
+.dp {
+  position: absolute; z-index: 40; top: calc(100% + 4px); left: -8px;
+  width: 226px; height: 216px;
+  background: var(--white); border: 1px solid var(--gray-dc); border-radius: 17px;
+  padding: 13px 11px 0;
+}
+.dp-head { display: flex; align-items: center; justify-content: space-between; height: 16px; }
+.dp-arrow { width: 12px; height: 12px; line-height: 0; }
+.dp-arrow.is-next svg { transform: scaleX(-1); }
+.dp-title { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--gray-37); }
+.dp-grid {
+  margin: 12px 8px 0;
+  display: grid; grid-template-columns: repeat(7, 18px); column-gap: 10px; row-gap: 8px;
+}
+.dp-grid span, .dp-grid button {
+  position: relative; isolation: isolate; width: 18px; height: 16px;
+  font-size: 12px; line-height: 16px; text-align: center; color: var(--gray-5b);
+}
+.dp-grid .wk { color: var(--gray-7f); }
+.dp-grid .prev { color: var(--gray-dc); }
+.dp-grid .next { color: var(--gray-a7); }
+.dp-grid .chosen { color: var(--white); z-index: 0; }
+.dp-grid .chosen::before {
+  content: ""; position: absolute; z-index: -1; left: -1px; top: -2px; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--primary);
+}
+
+/* ═════════ 行事曆區（捲動區） ═════════ */
+.cal-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;           /* 讓 FullCalendar 的 height:100% 有明確高度可以吃 */
+}
+#cal { height: 100%; }
+
+/* ── FullCalendar 基本覆寫 ── */
+.fc {
+  --fc-border-color: var(--gray-dc);
+  --fc-today-bg-color: var(--gap-today-bg);
+  --fc-page-bg-color: var(--white);
+  --fc-small-font-size: 12px;
+  font-size: 12px;
+}
+.fc .fc-scrollgrid { border: 0; }
+.fc .fc-scrollgrid-section > * { border: 0; }
+.fc-theme-standard td, .fc-theme-standard th { border-color: var(--gray-dc); }
+.fc .fc-daygrid-body, .fc .fc-timegrid-body { background: transparent; }
+.fc td.fc-day, .fc th.fc-col-header-cell { background: var(--white); }
+/* 時間格是兩層表格：橫線那層（slots）在上、欄那層（cols）在下，上層必須透明，直線與今天的黃底才看得到 */
+.fc .fc-timegrid-slot-lane { background: transparent; }
+.fc .fc-day-today { background: var(--gap-today-bg) !important; }
+.fc a { color: inherit; text-decoration: none; }
+
+/* 表格最外圈的框線交給下面的 .tg-frame 畫，這裡拿掉，才不會同一條線畫兩次（圓角處會看到直角殘影） */
+.fc-timegrid .fc-col-header-cell, .fc-dayGridMonth-view .fc-col-header-cell { border-top: 0; }
+.fc-timegrid th:nth-child(2), .fc-timegrid td:nth-child(2) { border-left: 0; }
+.fc-timegrid th:last-child, .fc-timegrid td:last-child { border-right: 0; }
+.fc-dayGridMonth-view th:first-child, .fc-dayGridMonth-view td:first-child { border-left: 0; }
+.fc-dayGridMonth-view th:last-child, .fc-dayGridMonth-view td:last-child { border-right: 0; }
+.fc-dayGridMonth-view tr:last-child td { border-bottom: 0; }
+
+/* 外框（圓角 8）另外畫一層蓋在上面：週／日視圖的時間軸在框外，表格本身畫不出來 */
+.tg-frame {
+  position: absolute; pointer-events: none; z-index: 3;
+  border: 1px solid var(--gray-dc); border-radius: 8px;
+}
+.tg-frame i { position: absolute; width: 9px; height: 9px; }
+.tg-frame i.tl { left: -1px;  top: -1px; }
+.tg-frame i.tr { right: -1px; top: -1px; }
+.tg-frame i.bl { left: -1px;  bottom: -1px; }
+.tg-frame i.br { right: -1px; bottom: -1px; }
+
+/* ── 月視圖（#A01／#A05） ── */
+.fc .fc-col-header-cell { height: 32px; vertical-align: middle; }
+.fc-dayGridMonth-view .fc-col-header-cell-cushion {
+  padding: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--gray-91);
+}
+.fc-dayGridMonth-view .fc-daygrid-day-frame { height: calc(var(--cal-day-cell-height) - 1px); min-height: 0; padding: 7px 0 0; }
+.fc .fc-daygrid-day-top { justify-content: center; flex-direction: row; }
+.fc .fc-daygrid-day-number {
+  padding: 0; width: 100%; text-align: center;
+  font-size: 12px; line-height: 16px; font-weight: 500; color: var(--gray-37);
+}
+.fc .fc-day-other .fc-daygrid-day-number { color: var(--gray-91); opacity: 1; }
+.fc .fc-day-other .fc-daygrid-day-top { opacity: 1; }
+/* 列距：日期與第一張卡 4、卡與卡 2。harness 的 margin-top 由 FullCalendar 算（跨天長條對齊用），不可覆寫 */
+.fc .fc-daygrid-day-events { margin: 2px 0 0; min-height: 0; }
+.fc .fc-daygrid-day-bottom { padding: 0; font-size: 12px; }
+.fc .fc-daygrid-day-bottom { margin-top: 2px; }
+
+/* 月視圖卡片（day_content 元件）：高 20、左右內距 4、圓角 4、12 Medium */
+.fc .fc-daygrid-event {
+  margin: 2px 6px 0 !important;
+  height: var(--cal-day-card-height);
+  padding: 2px 4px;
+  border-radius: var(--cal-radius-day-card);
+  border: 1px solid transparent;
+  font-size: 12px; line-height: 16px; font-weight: 500;
+}
+.fc .fc-daygrid-block-event { margin: 2px 4px 0 !important; }                       /* 跨天長條左右各 4 */
+.fc .fc-daygrid-block-event:not(.fc-event-start) { margin-left: 0 !important; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.fc .fc-daygrid-block-event:not(.fc-event-end)   { margin-right: 0 !important; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.fc .fc-daygrid-dot-event { display: block; }
+.fc .fc-daygrid-event .ev-text, .fc .fc-daygrid-block-event .fc-event-main {
+  display: block; overflow: hidden; white-space: nowrap; text-overflow: clip;   /* 卡片固定高度，超出裁切 */
+  padding: 0; margin: 0;
+}
+.fc .fc-daygrid-event .ev-text { margin-top: -1px; }
+
+/* 「還有 N 個」 */
+.fc .fc-daygrid-more-link {
+  display: block; margin: 2px 6px 0; height: 20px; padding: 2px 4px; border-radius: 4px;
+  font-size: 12px; line-height: 16px; font-weight: 500; color: var(--gray-7f);
+}
+.fc .fc-daygrid-more-link:hover { background: var(--gray-f5); }               /* #A10 */
+
+/* ── 行程卡片三種樣式（SRS 3.10） ── */
+.fc .fc-event.ev-fill { background: var(--cal-01); border-color: var(--cal-01); color: var(--white); }
+.fc .fc-event.ev-outline, .fc .fc-event.ev-strike { background: var(--white); border-color: var(--cal-01); color: var(--cal-01); }
+.fc .fc-event.ev-strike .ev-text, .fc .fc-event.ev-strike .ev-line { text-decoration: line-through; }
+.fc .fc-event .fc-event-main { color: inherit; }
+/* #A10 hover：實心 → 疊黑 10%；線框 → 底色 #F5F5F5 */
+.fc .fc-event.ev-fill:hover, .fc .fc-event.ev-fill.force-hover { box-shadow: inset 0 0 0 100px var(--gap-hover-overlay); }
+.fc .fc-event.ev-outline:hover, .fc .fc-event.ev-strike:hover,
+.fc .fc-event.ev-outline.force-hover, .fc .fc-event.ev-strike.force-hover { background: var(--gray-f5); }
+.fc .fc-daygrid-more-link.force-hover { background: var(--gray-f5); }
+.fc .fc-event:focus::after, .fc .fc-event::after { display: none; }
+.fc .fc-event:hover { filter: none; }
+.fc .fc-h-event .fc-event-main { color: inherit; }
+
+/* ── 週／日視圖（#A03／#A04／#A13／#A14） ── */
+.fc .fc-timegrid-axis, .fc .fc-timegrid-slot-label,
+.fc .fc-scrollgrid-shrink { border: 0 !important; background: transparent !important; }
+/* FullCalendar 依 cushion 的實際寬度決定時間軸寬 → cushion 固定 40（inline-block 才量得到） */
+.fc .fc-timegrid-axis-cushion, .fc .fc-timegrid-slot-label-cushion {
+  display: inline-block; width: var(--time-axis-w); flex-shrink: 0;
+  padding: 0; max-width: none; min-width: 0; text-align: left;
+  font-size: 12px; line-height: 18px; font-weight: 500; color: var(--gray-37);
+}
+.fc .fc-timegrid-slot-label { vertical-align: top; }
+.fc .fc-timegrid-slot-label-frame { text-align: left; }
+.fc .fc-timegrid-slot-label-cushion { padding-top: 2px; }
+
+/* 每小時一格，最小 44px；expandRows 會在畫面夠高時平均放大 */
+.fc .fc-timegrid-slot { height: var(--slot-h); }
+.fc .fc-timegrid-slot-minor { border-top-style: solid; }
+/* 全天列與時間格之間的那條線：FullCalendar 的 divider。藏起來會露出底色（看起來像一條很淡的線），
+   改成 1px 實線；左邊 40px 是時間軸，不畫線 */
+.fc .fc-timegrid-divider {
+  padding: 0; height: 1px;
+  background: linear-gradient(to right, transparent 0 var(--time-axis-w), var(--gray-dc) var(--time-axis-w));
+}
+
+/* 欄標題：星期（13 Semibold 灰）＋日期（14 Medium） */
+.fc-timegrid .fc-col-header-cell { height: 58px; padding: 6px 0; }
+.fc-timegrid .fc-col-header-cell-cushion { padding: 0; display: block; }
+.fc .wk-head { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.fc .wk-head .wd { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--gray-91); }
+.fc .wk-head .dn { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--gray-37); }
+.fc-timeGridDay-view .fc-col-header-cell { text-align: left; }
+.fc-timeGridDay-view .wk-head { display: inline-flex; margin-left: 40px; }
+
+/* 全天列：最少 44 高；最多 2 筆＋「還有 N 個」，不會再長高 */
+.fc .fc-timegrid-axis.fc-scrollgrid-shrink .fc-timegrid-axis-frame { align-items: flex-start; justify-content: flex-start; }
+.fc-timeGridDay-view .fc-timegrid-axis.fc-scrollgrid-shrink .fc-timegrid-axis-frame { align-items: center; }
+.fc-timegrid .fc-daygrid-body .fc-daygrid-day-frame { min-height: 43px; padding: 0 0 3px; }   /* 43＋框線 1＝44；滿載 67＋1＝68 */
+.fc-timegrid .fc-daygrid-day-top { display: none; }
+.fc-timegrid .fc-daygrid-day-events { margin: 0 !important; }
+.fc-timegrid .fc-daygrid-body-natural .fc-daygrid-day-events { margin-bottom: 0; }
+.fc-timegrid .fc-daygrid-event,
+.fc-timegrid .fc-daygrid-block-event { margin: 2px 2px 0 !important; }
+.fc-timegrid .fc-daygrid-more-link { margin: 0 2px; }
+.fc-timegrid .fc-daygrid-day-bottom { margin-top: 2px; }
+
+/* 時段卡片：12 Medium、內距 2/4、圓角 4，第二張起加 1px 白框 */
+.fc .fc-timegrid-event {
+  border-radius: var(--cal-radius-day-card);
+  padding: 2px 4px;
+  font-size: 12px; line-height: 16px; font-weight: 500;
+  box-shadow: none;
+  overflow: hidden;
+}
+.fc .fc-timegrid-event-harness-inset .fc-timegrid-event { box-shadow: none; }
+.fc .fc-timegrid-event-harness + .fc-timegrid-event-harness .fc-timegrid-event.ev-fill { border-color: var(--white); }
+.fc .fc-timegrid-event .fc-event-main { padding: 0; }
+.fc .ev-line { display: block; white-space: normal; word-break: break-all; }
+.fc .fc-timegrid-col-events { margin: 0 2px; }
+
+/* 「還有 N 個」與「+N」共用同一個 moreLinkContent，文字依所在位置用 CSS 決定 */
+.fc .fc-daygrid-more-link .ml::before { content: "還有" attr(data-n) "個"; }
+.fc .fc-timegrid-more-link .ml::before { content: "+" attr(data-n); }
+
+/* 「+N」 */
+.fc .fc-timegrid-more-link {
+  background: var(--white); border-radius: 4px; box-shadow: none;
+  color: var(--gray-7f); font-size: 12px; line-height: 16px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.fc .fc-timegrid-more-link-inner { padding: 0; }
+.fc .fc-timegrid-now-indicator-line, .fc .fc-timegrid-now-indicator-arrow { display: none; }
+
+/* FullCalendar 內建的 more 彈窗不用（位置規則跟稿不同），改用下面的 .pop */
+.fc .fc-popover { display: none !important; }
+
+/* ── 當日完整行程清單（#A06） ── */
+.pop {
+  position: fixed; z-index: 30; width: 260px; max-height: 314px;
+  display: flex; flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--gray-eb); border-radius: 8px;
+  box-shadow: var(--gap-shadow-pop);
+  overflow: hidden;
+}
+.pop-head {
+  position: relative; flex: 0 0 40px; background: var(--gray-f5);
+  padding: 7px 16px;
+}
+.pop-title { font-size: 16px; line-height: 24px; color: var(--gray-5b); }
+.pop-close { position: absolute; right: 15px; top: 9px; width: 20px; height: 20px; line-height: 0; }
+.pop-list {
+  overflow-y: auto; padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.pop-item {
+  flex: 0 0 24px; height: 24px; padding: 2px 4px; border-radius: 4px; border: 1px solid transparent;
+  font-size: 14px; line-height: 20px; text-align: left;
+  overflow: hidden; white-space: nowrap; text-overflow: clip;     /* 固定高度、單行、超出裁切 */
+}
+.pop-item.ev-fill { background: var(--cal-01); border-color: var(--cal-01); color: var(--white); }
+.pop-item.ev-outline, .pop-item.ev-strike { background: var(--white); border-color: var(--cal-01); color: var(--cal-01); }
+.pop-item.ev-strike { text-decoration: line-through; }
+.pop-item.ev-fill:hover, .pop-item.ev-fill.force-hover { box-shadow: inset 0 0 0 100px var(--gap-hover-overlay); }   /* #A11 */
+.pop-item.ev-outline:hover, .pop-item.ev-strike:hover { background: var(--gray-f5); }
+.pop-item > * { vertical-align: top; }
+
+/* ── Demo：強制 hover（?s=A16 等） ── */
+.force-hover-bar .date-chip { background: var(--gray-eb); }
+.force-hover-bar .round-btn { background: var(--gap-hover-soft); }
+
+/* ═════════ Demo 專用（不是產品畫面） ═════════ */
+.left-cover {
+  position: absolute; inset: 0; z-index: 60; border-radius: var(--main-radius);
+  background: repeating-linear-gradient(45deg, #eef1f5 0 12px, #e7ebf1 12px 24px);
+  display: grid; place-items: center;
+}
+.lc-box {
+  background: #1f2937; color: #fff; border-radius: 12px; padding: 18px 22px;
+  font-size: 13px; line-height: 1.7; text-align: center;
+}
+.lc-box p { margin: 6px 0 0; color: #cbd5e1; }
+
+.demobar {
+  flex: 0 0 auto;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px;
+  padding: 6px 12px;
+  background: #111827; color: #e5e7eb;
+  font-size: 12px; line-height: 18px;
+  font-family: -apple-system, "PingFang TC", sans-serif;
+}
+.demobar button, .demobar select {
+  font-size: 12px; color: #e5e7eb; background: #374151; border: 1px solid #4b5563;
+  border-radius: 999px; padding: 3px 10px; cursor: pointer;
+}
+.demobar button:hover { background: #4b5563; }
+.demobar button[aria-pressed="true"] { background: #2563eb; border-color: #2563eb; color: #fff; }
+.db-tag { font-weight: 700; letter-spacing: .08em; color: #93c5fd; }
+.db-field { display: flex; align-items: center; gap: 6px; }
+.db-sep { width: 1px; height: 16px; background: #4b5563; margin: 0 4px; }
+.db-label { color: #9ca3af; }
+.db-msg { flex: 1; min-width: 120px; color: #fcd34d; }
+.demobar.is-folded > :not(.db-fold):not(.db-tag) { display: none; }
+.demobar.is-folded .db-fold { transform: rotate(180deg); }
+
+/* 規格模式 */
+.spec-panel {
+  flex: 0 0 340px; margin-left: 8px;
+  background: #f8fafc; border-radius: 12px; overflow-y: auto;
+  font-family: -apple-system, "PingFang TC", sans-serif;
+  font-size: 12px; line-height: 1.6; color: #1f2937;
+  padding: 14px 14px 24px;
+}
+@media (max-width: 900px) {
+  .spec-panel { position: fixed; right: 8px; top: 8px; bottom: 44px; z-index: 90; width: 320px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+}
+.spec-panel h2 { font-size: 13px; margin: 16px 0 6px; color: #111827; }
+.spec-panel h2:first-child { margin-top: 0; }
+.spec-panel .sp-code { font-size: 16px; font-weight: 700; color: #1d4ed8; }
+.spec-panel a { color: #2563eb; }
+.spec-panel table { width: 100%; border-collapse: collapse; }
+.spec-panel td, .spec-panel th { border-bottom: 1px solid #e5e7eb; padding: 4px 4px; vertical-align: top; text-align: left; }
+.spec-panel th { color: #6b7280; font-weight: 500; }
+.spec-panel ul { margin: 0; padding-left: 18px; }
+.spec-panel li { margin: 2px 0; }
+.spec-panel .log { max-height: 160px; overflow-y: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 8px; }
+.spec-panel .log div { border-bottom: 1px dashed #e5e7eb; padding: 3px 0; }
+.spec-panel .log div:last-child { border: 0; }
+.spec-panel .val { font-weight: 600; color: #b45309; }
+.spec-panel .gap { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; padding: 6px 8px 6px 22px; }
+.spec-panel .hint { color: #6b7280; }
+.flash { animation: flash .9s ease-out; }
+@keyframes flash { 0% { outline: 3px solid #2563eb; } 100% { outline: 3px solid transparent; } }
+
+body.spec-on [data-spec]:not(.main):hover { outline: 1px dashed #2563eb; outline-offset: 1px; }
+body.spec-on .fc-event:hover, body.spec-on .fc-daygrid-day:hover, body.spec-on .fc-timegrid-slot-lane:hover { outline: 1px dashed #2563eb; outline-offset: -1px; }
+.hover-tip {
+  position: fixed; z-index: 200; max-width: 300px; pointer-events: none;
+  background: #111827; color: #f9fafb; border-radius: 8px; padding: 8px 10px;
+  font-family: -apple-system, "PingFang TC", sans-serif; font-size: 12px; line-height: 1.55;
+  box-shadow: 0 6px 20px rgba(0,0,0,.3);
+}
+.hover-tip b { color: #93c5fd; }
+.hover-tip .k { color: #9ca3af; }
+.hover-tip .warn { color: #fcd34d; }
+.hover-tip .src { margin-top: 6px; padding-top: 5px; border-top: 1px solid #374151; color: #9ca3af; font-size: 11px; line-height: 1.5; }
+.hover-tip .src b { color: #d1d5db; }

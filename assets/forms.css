@@ -1,0 +1,290 @@
+/* GCEP 行事曆 Phase 1 Demo — #C 建立／編輯活動、資訊卡、選擇成員
+ * 數值量自 Phase 1 頁 #C01～#C29。
+ */
+
+/* 滑鼠點擊不顯示藍色 focus 框，鍵盤操作仍保留 */
+.modal button:focus:not(:focus-visible),
+.info-card button:focus:not(:focus-visible),
+.alert button:focus:not(:focus-visible) { outline: none; }
+
+/* ═════════ 遮罩 ═════════ */
+.mask {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0, 0, 0, .3);
+  display: grid; place-items: center;
+}
+.mask.is-clear { background: transparent; }        /* 資訊卡：稿上背景不變暗 */
+
+/* ═════════ 共用視窗外框（radius/modal 8） ═════════ */
+.modal {
+  display: flex; flex-direction: column;
+  background: var(--white);
+  border-radius: var(--cal-radius-modal);
+  max-height: 90vh;                                 /* #C03 筆記 */
+  overflow: hidden;
+}
+.modal-head {
+  position: relative; flex: 0 0 40px;
+  background: var(--gray-f5);
+  padding: 8px 16px;
+  font-size: 16px; line-height: 24px; color: var(--gray-5b);
+}
+.modal-close { position: absolute; right: 16px; top: 10px; width: 20px; height: 20px; line-height: 0; }
+.modal-body { overflow-y: auto; padding: 20px 24px 24px; }   /* space/modal-pad */
+.modal-foot {
+  flex: 0 0 66px; display: flex; align-items: center; justify-content: flex-end; gap: 16px;
+  padding: 0 24px; margin: 0 16px; border-top: 1px solid var(--gray-dc);
+}
+
+/* 按鈕（size/button-height 32、min-width 66） */
+.btn {
+  min-width: 66px; height: 32px; padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 17px; line-height: 20px;
+  white-space: nowrap;
+}
+.btn-cancel { color: var(--gray-91); border-radius: 100px; }
+.btn-primary { background: var(--primary); color: var(--white); }
+.btn-primary:hover { background: var(--positive); }          /* #C25 */
+.btn-primary:disabled { opacity: .4; cursor: default; }
+.btn-primary:disabled:hover { background: var(--primary); }
+
+/* ═════════ 建立／編輯活動（#C02／#C03） ═════════ */
+.form-modal { width: 600px; }                                /* size/modal-width */
+.form-modal .modal-body { display: flex; flex-direction: column; gap: 28px; }  /* space/field-gap */
+
+.field { display: flex; align-items: flex-start; gap: 20px; }  /* space/label-gap */
+.field > .label { flex: 0 0 96px; font-size: 14px; line-height: 21px; color: var(--gray-5b); padding-top: 8px; }
+.field.col { flex-direction: column; align-items: stretch; gap: 12px; }   /* stretch 才會撐滿，輸入框才是滿版 */
+.field.col > .label { flex: 0 0 auto; padding-top: 0; }
+
+/* 標題輸入框（radius/input 20、左右比欄位再內縮 16） */
+.text-input {
+  position: relative; margin: 0 16px;
+  display: flex; align-items: center;
+  height: 36px; padding: 6px 16px;
+  border: 1px solid var(--gray-c9); border-radius: 20px;
+}
+.text-input input, .text-input textarea {
+  flex: 1; min-width: 0; border: 0; outline: none; padding: 0; resize: none;
+  font: 400 16px/24px var(--font); color: var(--gray-37); background: none;
+}
+.text-input input::placeholder { color: var(--gray-a7); }
+.text-input .count { flex: 0 0 auto; margin-left: 8px; font-size: 12px; line-height: 16px; color: var(--gray-7f); }
+
+/* 時間列 */
+.time-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.time-row .tilde { color: var(--gray-5b); font-size: 14px; }
+/* 結束時間＋全天 ＝ 一組，組內距 16（量自 #C03 Frame 1000001077） */
+.end-group { display: flex; flex-direction: column; gap: 16px; }
+.allday-row { display: flex; align-items: center; gap: 10px; }
+.allday-row .cb { line-height: 0; }
+.allday-row span { font-size: 14px; line-height: 21px; color: var(--gray-37); }
+
+/* 參與人 */
+.members-head { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 11px; margin-bottom: 4px; }   /* 稿：標題列 34＋間距 4＋成員列 72 */
+.members-head .t { font-size: 15px; line-height: 23px; font-weight: 500; color: var(--gray-5b); }
+/* ＋新增成員＝Button_Create 元件，沒有 hover（SRS 3.13） */
+.create-btn { color: var(--primary); font-size: 15px; line-height: 23px; font-weight: 500; white-space: nowrap; }
+.member-row {
+  display: flex; align-items: center; gap: 12px;
+  height: 72px; padding: 0 12px;                              /* size/member-row-height */
+  border-bottom: 1px solid var(--gray-eb);
+}
+.member-row .ava { position: relative; flex: 0 0 40px; height: 40px; }   /* size/avatar-member */
+.member-row .ava .pic { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: block; }
+.member-row .ava .crown {
+  position: absolute; left: 24px; bottom: -2px; width: 16px; height: 16px;
+  border-radius: 50%; background: #ffae00; border: 1px solid var(--white);
+  display: grid; place-items: center;
+}
+.member-row .info { flex: 1; min-width: 0; }
+.member-row .nm { font-size: 16px; line-height: 24px; color: var(--gray-37); }
+.member-row .dept { font-size: 14px; line-height: 21px; color: var(--gray-5b); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.member-row .perm { flex: 0 0 auto; }
+.member-row .del { flex: 0 0 20px; line-height: 0; visibility: hidden; }  /* #C25：hover 才顯示 */
+.member-row:hover .del { visibility: visible; }
+.member-row .del.locked { visibility: hidden !important; }               /* 建立者不顯示刪除 */
+
+/* 進階設定 */
+.adv-toggle {
+  display: inline-flex; align-self: flex-start; align-items: center; gap: 6px;
+  font-size: 16px; line-height: 24px; font-weight: 600; color: var(--primary);
+  padding: 6px 0;
+}
+.adv-toggle i { line-height: 0; transition: transform .15s; }
+.adv-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
+.adv-box { display: flex; flex-direction: column; gap: 28px; }
+
+/* 通知列（稿上只畫一組，多組時的列距稿未定義，Demo 用 12） */
+.notify-row + .notify-row { margin-top: 12px; }
+.notify-row { display: flex; align-items: center; gap: 14px; }
+.notify-row .del { line-height: 0; visibility: hidden; }
+.notify-row:hover .del { visibility: visible; }
+.add-notify { display: block; margin-top: 12px; font-size: 14px; line-height: 21px; color: var(--gray-7f); }  /* 08-28 定案：灰色 */
+
+/* ═════════ 下拉選單（Dropdown 通用規則：寬度自適應內容） ═════════ */
+.dd { position: relative; display: inline-flex; }
+.dd-menu {
+  position: absolute; z-index: 60; top: calc(100% + 4px); left: 0;
+  min-width: 100%; max-width: 100%;
+  background: var(--white); border: 1px solid var(--gray-eb);
+  border-radius: var(--cal-radius-menu); box-shadow: var(--gap-shadow-pop);
+  padding: 5px 0;                                        /* space/menu-pad-y */
+  max-height: 232px; overflow-y: auto;
+}
+.dd-menu.w-auto { max-width: none; white-space: nowrap; }
+.dd-menu button {
+  display: block; width: 100%; height: var(--cal-menu-row-height);
+  padding: 0 16px;                                       /* space/menu-pad-x */
+  text-align: left; font-size: 14px; line-height: 21px; color: var(--gray-5b);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dd-menu button.is-on { background: var(--gray-f5); }
+
+/* ═════════ 活動資訊卡（#C14～#C24） ═════════ */
+.info-card {
+  position: absolute; z-index: 30;
+  width: 400px;                                          /* size/infocard-width */
+  display: flex; flex-direction: column;
+  max-height: 90vh;
+  background: var(--white);
+  border-radius: var(--cal-radius-modal);
+  box-shadow: var(--gap-shadow-pop);
+  overflow: hidden;
+}
+.info-head {
+  position: relative; flex: 0 0 42px; display: flex; align-items: center;
+  background: var(--gray-f5); padding: 9px 16px;
+  font-size: 16px; line-height: 24px; color: var(--gray-5b);
+}
+.info-head .acts { position: absolute; right: 16px; top: 11px; display: flex; gap: 24px; }
+.info-head .acts button { width: 20px; height: 20px; line-height: 0; }
+.info-body { overflow-y: auto; padding: 8px 16px 12px; }
+.info-row { display: flex; gap: 12px; padding: 12px 8px; }
+.info-row > .ic { flex: 0 0 20px; line-height: 0; color: var(--gray-5b); }
+.info-row .tx { font-size: 16px; line-height: 24px; color: var(--gray-37); min-width: 0; }
+.info-row.is-loc .tx { line-height: 20px; }          /* 稿上地點列高 44（其他列 48） */
+.info-row .sub { font-size: 12px; line-height: 17px; color: var(--gray-91); }
+.info-title { display: flex; align-items: center; gap: 12px; padding: 12px 8px; }
+.info-title .sq { flex: 0 0 12px; height: 12px; border-radius: 2px; background: var(--cal-01); }
+.info-title h2 { margin: 0; font-size: 18px; line-height: 27px; font-weight: 600; color: var(--gray-37); }
+.info-time { display: flex; align-items: center; gap: 12px; }
+.info-time .sep { width: 1px; height: 20px; background: var(--gray-dc); }
+.info-people { display: flex; flex-direction: column; gap: 4px; }
+.info-people .who { display: flex; align-items: center; gap: 8px; padding: 12px 0; }   /* 稿：頭像左緣對齊 icon 右側（x56），不再另外縮排 */
+.info-people .who .ava { position: relative; flex: 0 0 30px; height: 30px; }   /* size/avatar-info */
+.info-people .who .pic { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: block; }
+.info-people .who .badge {
+  position: absolute; right: -2px; bottom: -2px; width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid var(--white); display: grid; place-items: center;
+  font-size: 9px; line-height: 1; color: var(--white);
+}
+.info-people .who .badge.yes { background: var(--primary); }
+.info-people .who .badge.no { background: var(--negative); }
+.info-people .who .badge.maybe { background: var(--gray-a7); }
+
+/* 是否參加？（#C14／#C15／#C16） */
+.rsvp {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 12px;
+  padding: 16px; border-top: 1px solid var(--gray-dc);
+}
+.rsvp .q { flex: 1; font-size: 16px; line-height: 20px; color: var(--gray-37); }
+.rsvp button {
+  min-width: 74px; height: 32px; padding: 6px 16px;      /* size/rsvp-button-min-w */
+  border: 1px solid var(--gray-dc); border-radius: 100px;
+  font-size: 14px; line-height: 20px; font-weight: 600; color: var(--gray-37);
+  background: var(--white);
+}
+.rsvp button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--white); }
+
+/* 更多選單（#C17） */
+.more-menu {
+  position: absolute; z-index: 40; top: 36px; right: 44px;
+  min-width: 74px; padding: 5px 0;
+  background: var(--white); border: 1px solid var(--gray-eb);
+  border-radius: var(--cal-radius-menu); box-shadow: var(--gap-shadow-pop);
+}
+.more-menu button { display: block; width: 100%; height: var(--cal-menu-row-height); padding: 0 16px; text-align: left; font-size: 14px; color: var(--gray-5b); }
+.more-menu button:hover { background: var(--gray-f5); }
+
+/* ═════════ Alert（#C11／#C21／#C22／#C20） ═════════ */
+.alert {
+  width: 372px;                                          /* size/confirm-width */
+  background: var(--white); border-radius: var(--cal-radius-modal);
+  overflow: hidden;
+}
+.alert .head { height: 40px; background: var(--gray-f5); padding: 8px 16px; font-size: 16px; line-height: 23px; color: var(--gray-5b); }
+.alert .body { padding: 15px; }
+.alert .msg { font-size: 16px; line-height: 24px; color: var(--gray-37); }
+.alert .acts { display: flex; justify-content: flex-end; gap: 16px; margin-top: 15px; }
+.alert .radio-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; font-size: 14px; line-height: 20px; color: var(--gray-5b); cursor: pointer; }
+.alert .radio-row .rb { flex: 0 0 16px; line-height: 0; }
+
+/* ═════════ 成功提示（#C12／#C23） ═════════ */
+.toast-card {
+  width: 325px; padding: 40px;
+  background: var(--white); border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  font-size: 18px; line-height: 27px; color: var(--gray-5b);
+}
+.toast-card .tick { width: 50px; height: 50px; }
+
+/* ═════════ 選擇成員（#C26／#C27／#C28） ═════════ */
+.picker { width: 600px; height: 550px; }
+.picker .tabs { display: flex; gap: 20px; padding: 16px 20px 0; }
+.picker .tab { display: flex; align-items: center; gap: 5px; padding-bottom: 4px; }
+.picker .tab .dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--gray-a7); }
+.picker .tab .tx { font-size: 15px; line-height: 23px; color: var(--gray-7f); padding-bottom: 4px; border-bottom: 2px solid transparent; }
+.picker .tab.is-on .dot { border-color: var(--primary); }
+.picker .tab.is-on .tx { color: var(--primary); border-bottom-color: var(--primary); }
+.picker .search {
+  display: flex; align-items: center; gap: 6px;
+  margin: 16px 20px 0; height: 30px; padding: 2px 4px 2px 12px;
+  background: var(--gray-f5); border-radius: 20px;
+}
+.picker .search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: 400 14px/21px var(--font); color: var(--gray-37); }
+.picker .search input::placeholder { color: var(--gray-91); }
+.picker .search .adv { height: 26px; padding: 4px 10px; background: var(--white); border: 1px solid var(--gray-eb); border-radius: 20px; font-size: 14px; color: var(--gray-5b); }
+.picker .org { display: flex; align-items: center; gap: 4px; margin: 16px 20px 0; font-size: 16px; line-height: 24px; color: var(--gray-7f); }
+.picker .list { flex: 1; min-height: 0; overflow-y: auto; margin: 10px 20px 0; }
+.picker .prow { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--gray-eb); font-size: 14px; color: var(--gray-5b); }
+.picker .prow.member { padding: 11px 12px; }
+.picker .prow .cb { flex: 0 0 18px; line-height: 0; }
+.picker .prow .cb.hidden-cb { visibility: hidden; }           /* #C27 不可邀請角色：隱藏但保留位置 */
+.picker .prow .ava { flex: 0 0 44px; height: 44px; border-radius: 50%; overflow: hidden; }
+.picker .prow .nm { font-size: 16px; line-height: 24px; color: var(--gray-37); }
+.picker .prow .dept { font-size: 14px; line-height: 21px; color: var(--gray-5b); }
+.picker .prow .tag { font-size: 12px; line-height: 21px; color: var(--gray-7f); }
+.picker .prow.is-disabled { pointer-events: none; }
+.picker .prow.is-disabled .cb { opacity: .45; }          /* 邀請中：checkbox 為 disable 樣式 */
+.picker .prow.is-disabled .nm, .picker .prow.is-disabled .dept { color: var(--gray-a7); }
+.picker .prow .grow { flex: 1; min-width: 0; }
+
+/* ═════════ #C01 新增行程下拉 ═════════ */
+.add-menu { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 74px; padding: 5px 0;
+  background: var(--white); border: 1px solid var(--gray-eb); border-radius: var(--cal-radius-menu); box-shadow: var(--gap-shadow-pop); }
+.add-menu button { display: block; width: 100%; height: var(--cal-menu-row-height); padding: 0 16px; text-align: left; font-size: 14px; color: var(--gray-5b); }
+.add-menu button:hover { background: var(--gray-f5); }
+
+/* ═════════ #G01 通知_提示框 ═════════ */
+.remind {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  width: 284px; padding: 16px; z-index: 50;
+  background: var(--white); border-radius: var(--cal-radius-modal); box-shadow: 0 6px 24px rgba(0, 0, 0, .22);
+}
+.remind p { margin: 0 0 14px; font-size: 14px; line-height: 1.7; color: var(--gray-37); }
+.remind .acts { display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
+
+/* ═════════ Hover（稿上未定義，2026-09-18 Alvie 指示統一補上） ═════════
+ * 全部照 SRS 3.13 的表；沒列在表上的元件就沒有 hover。
+ */
+.dd-menu button:hover,
+.more-menu button:hover,
+.add-menu button:hover { background: var(--gray-f5); }      /* 下拉選單的每個選項 */
+
+/* 參與人列：底色 #000000 3%，同時顯示右側刪除 ✕（筆記 9761:197439） */
+.member-row:hover { background: rgba(0, 0, 0, .03); }
+
+/* 資訊卡的是／否／不確定：只有未選中的有 hover（筆記 9789:232814） */
+.rsvp button:not([aria-pressed="true"]):hover { background: var(--gray-f5); }

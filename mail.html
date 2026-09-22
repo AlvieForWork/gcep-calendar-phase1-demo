@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GCEP 行事曆 Phase 1 Demo — #H Gmail 通知模板</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); color: var(--gray-37); background: #eef1f5; display: flex; height: 100vh; overflow: hidden; }
+
+  /* 左：模板清單（Demo 控制，不是產品畫面） */
+  .side { flex: 0 0 300px; background: #111827; color: #e5e7eb; padding: 14px; overflow-y: auto; font-size: 12px; }
+  .side h1 { font-size: 13px; color: #93c5fd; margin: 0 0 4px; }
+  .side .hint { color: #9ca3af; line-height: 1.7; }
+  .side a { color: #93c5fd; }
+  .side button {
+    display: block; width: 100%; text-align: left; margin-top: 6px; padding: 8px 10px;
+    background: #374151; border: 1px solid #4b5563; border-radius: 8px; color: #e5e7eb; font: inherit; cursor: pointer;
+  }
+  .side button:hover { background: #4b5563; }
+  .side button[aria-pressed="true"] { background: #2563eb; border-color: #2563eb; color: #fff; }
+  .side .rule { margin-top: 14px; padding: 10px; background: #1f2937; border-radius: 8px; line-height: 1.7; }
+  .side .rule b { color: #fcd34d; }
+
+  /* 右：Gmail 畫面（Gmail 外框非交付範圍，用灰階示意） */
+  .mail { flex: 1; min-width: 0; overflow-y: auto; background: #fff; }
+  .gmail-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #e5e7eb; color: #9aa0a6; font-size: 13px; }
+  .gmail-bar .logo { font-size: 18px; color: #5f6368; font-weight: 500; }
+  .gmail-bar .sbox { flex: 1; max-width: 640px; height: 32px; background: #f1f3f4; border-radius: 8px; }
+  .subject { padding: 18px 28px 4px; font-size: 20px; color: #202124; }
+  .subject .tag { font-size: 11px; background: #ddd; color: #444; border-radius: 3px; padding: 1px 6px; margin-left: 8px; vertical-align: middle; }
+  .sender { display: flex; align-items: center; gap: 10px; padding: 8px 28px 16px; border-bottom: 1px solid #e5e7eb; }
+  .sender .ava { width: 32px; height: 32px; border-radius: 50%; background: #dadce0; }
+  .sender .who { font-size: 13px; color: #202124; }
+  .sender .who small { color: #5f6368; display: block; }
+
+  /* 郵件內容（#H 的交付範圍） */
+  .mail-body { background: var(--gray-f5); padding: 32px 0 48px; }
+  .brand { text-align: center; margin-bottom: 20px; font-size: 26px; font-weight: 700; color: var(--gray-5b); letter-spacing: .04em; }
+  .brand .dot { display: inline-block; width: 28px; height: 28px; border-radius: 8px; background: var(--positive); margin-right: 8px; vertical-align: -6px; }
+  .mail-card {
+    width: 400px; margin: 0 auto; background: var(--white); border-radius: 8px; padding: 8px 16px 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .mail-msg { width: 400px; margin: 0 auto; background: var(--white); border-radius: 8px; padding: 20px 16px; font-size: 14px; line-height: 1.9; color: var(--gray-37); white-space: pre-wrap; }
+  .mail-row { display: flex; gap: 12px; padding: 12px 8px; }
+  .mail-row .ic { flex: 0 0 20px; line-height: 0; }
+  .mail-row .tx { font-size: 16px; line-height: 24px; color: var(--gray-37); }
+  .mail-row .sub { font-size: 12px; line-height: 17px; color: var(--gray-91); }
+  .mail-title { display: flex; align-items: center; gap: 12px; padding: 12px 8px; }
+  .mail-title .sq { width: 12px; height: 12px; border-radius: 2px; background: var(--cal-01); }
+  .mail-title h2 { margin: 0; font-size: 18px; line-height: 27px; font-weight: 600; }
+  .who-row { display: flex; align-items: center; gap: 8px; padding: 8px 0 8px 32px; }
+  .who-row .pic { width: 30px; height: 30px; border-radius: 50%; background: #dcdcdc; }
+  .who-row .nm { font-size: 16px; color: var(--gray-37); }
+  .more-people { margin: 4px 0 0 32px; font-size: 14px; color: var(--primary); }
+  .cta { display: block; width: 104px; margin: 24px auto 20px; padding: 8px 16px; text-align: center;
+    background: var(--primary); color: var(--white); border-radius: 16px; font-size: 14px; text-decoration: none; }
+  .foot { text-align: center; font-size: 12px; line-height: 2; color: var(--gray-7f); }
+  .foot a { color: var(--primary); }
+  .note-line { max-width: 640px; margin: 20px auto 0; padding: 0 16px; font-size: 12px; line-height: 1.8; color: var(--gray-7f); }
+</style>
+</head>
+<body>
+
+<aside class="side">
+  <h1>#H Gmail 通知模板（Phase 1，8 種）</h1>
+  <p class="hint">Gmail 的外框是示意，交付範圍是中間那封信的內容。<br>
+    <a href="app.html">← 回行事曆</a>　<a href="notify.html">#G 通知 →</a></p>
+  <div id="list"></div>
+  <div class="rule">
+    <b>標題格式</b><br>{通知類型}：{活動名稱} - {時間格式}<br>
+    ・非全日：YYYY/MM/DD（週） 開始–結束<br>
+    ・單日全日：YYYY/MM/DD（週）<br>
+    ・多日全日：YYYY/MM/DD（週）–YYYY/MM/DD（週）<br>
+    <b>變更通知</b>：標題用「舊名稱」；備註新舊值各顯示前 20 字，超過以「…」省略。
+  </div>
+</aside>
+
+<main class="mail">
+  <div class="gmail-bar"><span class="logo">Gmail</span><span class="sbox"></span><span>非交付範圍</span></div>
+  <h2 class="subject" id="subject"></h2>
+  <div class="sender">
+    <span class="ava"></span>
+    <span class="who">互動資通 &lt;service@mail.service&gt;<small>to me</small></span>
+  </div>
+  <div class="mail-body">
+    <div class="brand"><span class="dot"></span>GECP</div>
+    <div id="content"></div>
+    <a class="cta" href="app.html?open=info">前往行事曆</a>
+    <div class="foot">
+      服務專線：+886-2-8913-1868 ext. 89<br>
+      服務信箱：<a href="#">https://www.teamplus.tech/</a><br>
+      服務網站：<a href="#">service@teamplus.com.tw</a>
+    </div>
+  </div>
+  <p class="note-line" id="ruleLine"></p>
+</main>
+
+<script src="assets/icons.js"></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const I = window.ICONS;
+  const EV = { name: '開發團隊會議', date: '2025/08/15（三）', time: '上午10:00 - 上午11:00',
+               d: '2025/08/10', t: '09:00 – 10:00', owner: 'Johanna White' };
+
+  const card = (people, showMore) => `
+    <div class="mail-card">
+      <div class="mail-title"><span class="sq"></span><h2>${EV.name}</h2></div>
+      <div class="mail-row"><span class="ic">${I.clock}</span><span class="tx">${EV.d}　|　${EV.t}</span></div>
+      <div class="mail-row"><span class="ic">${I.user}</span><span class="tx">參與人
+        ${people.map(n => `<div class="who-row"><span class="pic"></span><span class="nm">${n}</span></div>`).join('')}
+        ${showMore ? '<div class="more-people">前往查看所有參與人</div>' : ''}
+      </span></div>
+      <div class="mail-row"><span class="ic">${I.calIcon}</span><span class="tx">${EV.owner}
+        <div class="sub">建立者：${EV.owner}</div></span></div>
+    </div>`;
+  const msg = text => `<div class="mail-msg">${text}\n\n@ProjectName服務團隊 致敬</div>`;
+
+  const T = {
+    H01: { name: '活動邀請', subject: `邀請：${EV.name} - ${EV.date} ${EV.time}`,
+      body: () => card(['Johanna White', 'Emily Green', 'Amy Brown'], false),
+      rule: '當主辦人在建立活動時，新增某位使用者為參與人時通知。通知對象：該位參與人。「前往行事曆」點擊後開啟活動資訊卡片。' },
+    H02: { name: '活動邀請（參與人超過 3 人）', subject: `邀請：${EV.name} - ${EV.date} ${EV.time}`,
+      body: () => card(['Johanna White', 'Emily Green', 'Amy Brown'], true),
+      rule: '參與人超過 3 人時，卡片只列 3 位並顯示「前往查看所有參與人」，點擊後開啟活動資訊卡片。' },
+    H03: { name: '回覆：接受', subject: `已接受：{活動名稱} - ${EV.date} ${EV.time}`,
+      body: () => msg('您建立的活動「{活動名稱}」，參與人 {參與人} 已接受邀請。'),
+      rule: '當參與人對活動邀請回覆「接受」時通知。通知對象：活動主辦人。' },
+    H04: { name: '回覆：拒絕', subject: `已拒絕：{活動名稱} - ${EV.date} ${EV.time}`,
+      body: () => msg('您建立的活動「{活動名稱}」，參與人 {參與人} 已拒絕邀請。'),
+      rule: '當參與人對活動邀請回覆「拒絕」時通知。通知對象：活動主辦人。' },
+    H05: { name: '回覆：不確定', subject: `不確定：{活動名稱} - ${EV.date} ${EV.time}`,
+      body: () => msg('您建立的活動「{活動名稱}」，參與人 {參與人} 已回覆「不確定」。'),
+      rule: '當參與人對活動邀請回覆「不確定」時通知。通知對象：活動主辦人。' },
+    H06: { name: '活動變更通知', subject: `活動更新：{活動名稱} - ${EV.date} ${EV.time}`,
+      body: () => msg('活動「{活動名稱}」已更新。\n\n變更項目：\n活動名稱：專案討論 → 專案 Kickoff\n起始時間：14:00 → 15:00\n地點：會議室 A → 會議室 C\n參與人：新增 Emily Green\n參與人：移除 Amy Brown\n通知：開始前 30 分鐘 → 15 分鐘\n備註：線框稿是產品的基本雛形，呈現出…→ 優秀的 UI 設計稿，其價值不僅在於…\n\n編輯者：{操作者}'),
+      rule: '只顯示有變動的欄位；新增／刪除寫成「新增 {項目}」「刪除 {項目}」。標題用變更前的舊活動名稱。備註新舊值各顯示前 20 字，超過以「…」省略。' },
+    H07: { name: '活動取消通知', subject: `活動取消通知：{活動名稱} - ${EV.date} ${EV.time}`,
+      body: () => msg('活動「{活動名稱}」已取消並從您的行事曆中移除。'),
+      rule: '當操作者刪除活動時通知。通知對象：所有該活動的參與人（含主辦人），操作者除外。' },
+    H08: { name: '移除參與人通知', subject: `移除通知：{活動名稱} - ${EV.date} ${EV.time}`,
+      body: () => msg('{操作者} 已將您從活動「{活動名稱}」的參與人中移除，此活動已從您的行事曆中移除。'),
+      rule: '當某位參與人從活動的參與人欄位移除時通知。通知對象：被移除的該位參與人。可執行移除的人：活動主辦人，以及該行事曆的建立者與可編輯者。' },
+  };
+
+  $('list').innerHTML = Object.entries(T).map(([k, v]) => `<button data-k="${k}">#${k}　${v.name}</button>`).join('');
+  function show(k) {
+    const t = T[k];
+    $('subject').innerHTML = t.subject + '<span class="tag">Inbox</span>';
+    $('content').innerHTML = t.body();
+    $('ruleLine').textContent = '規則：' + t.rule;
+    document.querySelectorAll('#list button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === k)));
+    history.replaceState(null, '', '?s=' + k);
+  }
+  $('list').onclick = e => { const b = e.target.closest('button'); if (b) show(b.dataset.k); };
+  const q = (new URLSearchParams(location.search).get('s') || 'H01').toUpperCase();
+  show(T[q] ? q : 'H01');
+})();
+</script>
+</body>
+</html>

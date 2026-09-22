@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GCEP 行事曆 Phase 1 Demo</title>
+<!-- FullCalendar v6.1.19（Standard Bundle，含 interaction）放在本機，離線也能開 -->
+<script src="assets/fullcalendar.min.js"></script>
+<script src="assets/fullcalendar-locales.min.js"></script>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/forms.css">
+</head>
+<body>
+
+<div class="shell" id="shell">
+
+  <!-- ═══ 左側導覽列（New Messenger 共用元件，不在行事曆交付範圍） ═══ -->
+  <nav class="nav" id="nav"></nav>
+
+  <!-- ═══ Main Content ═══ -->
+  <main class="main" id="main" data-spec="main">
+    <div class="win-ctrl" data-spec="winctrl">
+      <span id="wcMin"></span><span id="wcMax"></span><span id="wcClose"></span>
+    </div>
+
+    <header class="head">
+      <div class="title-box"><h1 class="title" data-spec="title">行事曆</h1></div>
+
+      <div class="datenav" id="datenav">
+        <div class="datenav-row" id="datenavRow">
+          <div class="grp grp-a">
+            <button class="date-chip chip-today" id="btnToday" data-spec="today">今天</button>
+            <button class="round-btn" id="btnPrev" data-spec="arrow" aria-label="上一個"></button>
+            <button class="round-btn" id="btnNext" data-spec="arrow" aria-label="下一個"></button>
+          </div>
+          <div class="grp grp-b">
+            <div class="anchor">
+              <button class="date-chip chip-date" id="btnDate" data-spec="date">2025/08</button>
+              <!-- #A09 Date Picker -->
+              <div class="dp" id="dp" hidden data-spec="dp">
+                <div class="dp-head">
+                  <button class="dp-arrow" id="dpPrev" aria-label="上個月"></button>
+                  <span class="dp-title" id="dpTitle"></span>
+                  <button class="dp-arrow is-next" id="dpNext" aria-label="下個月"></button>
+                </div>
+                <div class="dp-grid" id="dpGrid"></div>
+              </div>
+            </div>
+            <div class="anchor">
+              <button class="selectBtn view-sel" id="btnView" data-spec="viewsel">
+                <span id="viewLabel">月</span><i id="viewCaret"></i>
+              </button>
+              <!-- #A02 檢視下拉選單 -->
+              <div class="menu view-menu" id="viewMenu" hidden data-spec="viewmenu">
+                <button data-v="day">天</button>
+                <button data-v="week">週</button>
+                <button data-v="month">月</button>
+              </div>
+            </div>
+          </div>
+          <div class="grp actions">
+            <div class="anchor">
+              <button class="round-btn filter-btn" id="btnFilter" data-spec="filterbtn" aria-label="篩選"></button>
+              <!-- #B01 篩選清單 -->
+              <div class="menu filter-menu" id="filterMenu" hidden data-spec="filtermenu">
+                <div class="fm-group" data-spec="fmgroup">我的行事曆</div>
+                <button class="fm-item" id="fmItem" data-spec="fmitem">
+                  <i class="fm-check" id="fmCheck"></i>
+                  <span class="fm-name" id="fmName"></span>
+                </button>
+              </div>
+            </div>
+            <div class="anchor">
+              <button class="flatBtn add-btn" id="btnAdd" data-spec="add">＋新增行程</button>
+              <!-- #C01 新增行程下拉選單 -->
+              <div class="add-menu" id="addMenu" hidden data-spec="addmenu">
+                <button data-kind="event">活動</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="divider" data-spec="divider"></div>
+      </div>
+    </header>
+
+    <div class="cal-area" id="calArea">
+      <div id="cal"></div>
+      <!-- 週／日視圖：時間格外框（axis 在框外，所以框線另外畫） -->
+      <div class="tg-frame" id="tgFrame" hidden></div>
+      <!-- #A06 當日完整行程清單 -->
+      <div class="pop" id="pop" hidden data-spec="pop">
+        <div class="pop-head">
+          <span class="pop-title" id="popTitle"></span>
+          <button class="pop-close" id="popClose" aria-label="關閉"></button>
+        </div>
+        <div class="pop-list" id="popList"></div>
+      </div>
+    </div>
+
+    <!-- #G01 通知_提示框（行程開始前／截止前的提醒） -->
+    <div class="remind" id="remind" hidden data-spec="remind">
+      <p id="remindText"></p>
+      <div class="acts">
+        <button class="btn btn-cancel" id="remindCancel">取消</button>
+        <button class="btn btn-primary" id="remindGo">前往查看</button>
+      </div>
+    </div>
+
+    <!-- Demo：離開行事曆時的佔位畫面（不是產品畫面） -->
+    <div class="left-cover" id="leftCover" hidden>
+      <div class="lc-box">
+        <b>（Demo）已切換到其他模組</b>
+        <p>點左側的行事曆 icon 回到行事曆，<br>看「檢視模式」與「日期」怎麼被記住。</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══ 規格模式面板（Demo 專用） ═══ -->
+  <aside class="spec-panel" id="specPanel" hidden></aside>
+</div>
+
+<!-- ═══ Demo 控制列（不是產品畫面） ═══ -->
+<div class="demobar" id="demobar">
+  <span class="db-tag">DEMO</span>
+  <label class="db-field">稿號
+    <select id="dbScreen"></select>
+  </label>
+  <button id="dbSpec" aria-pressed="false">規格模式</button>
+  <span class="db-sep"></span>
+  <span class="db-label">記憶模擬</span>
+  <button id="dbLeave" title="切到其他模組再回來">切到交談再回來</button>
+  <button id="dbRelogin">登出再登入</button>
+  <button id="dbDevice">換一台裝置登入</button>
+  <span class="db-sep"></span>
+  <button id="dbRemind">#G01 提醒</button>
+  <a class="db-label" href="notify.html" style="color:#93c5fd">#G 通知</a>
+  <a class="db-label" href="mail.html" style="color:#93c5fd">#H Email</a>
+  <span class="db-msg" id="dbMsg"></span>
+  <button class="db-fold" id="dbFold" title="收合 Demo 列">⌄</button>
+</div>
+
+<div class="hover-tip" id="hoverTip" hidden></div>
+
+<script src="assets/icons.js"></script>
+<script src="assets/position.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/spec.js"></script>
+<script src="assets/forms.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

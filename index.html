@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GCEP 行事曆 Phase 1 Demo — 稿號索引</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 28px 32px 60px; background: #eef1f5; font-family: var(--font); color: var(--gray-37); }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .lead { font-size: 13px; line-height: 1.9; color: var(--gray-5b); max-width: 880px; }
+  .lead b { color: var(--gray-37); }
+  .top { display: flex; gap: 10px; margin: 16px 0 26px; flex-wrap: wrap; }
+  .top a {
+    display: inline-block; padding: 9px 18px; border-radius: 999px; text-decoration: none;
+    background: var(--primary); color: #fff; font-size: 14px;
+  }
+  .top a:hover { background: var(--positive); }
+  .top a.ghost { background: #fff; color: var(--gray-5b); border: 1px solid var(--gray-c9); }
+  h2 { font-size: 15px; margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-dc); }
+  h2 small { color: var(--gray-7f); font-weight: 400; margin-left: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 8px; }
+  .card {
+    display: block; padding: 10px 12px; background: #fff; border: 1px solid var(--gray-eb);
+    border-radius: 8px; text-decoration: none; color: inherit;
+  }
+  .card:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .card b { color: var(--primary); font-size: 13px; }
+  .card span { display: block; font-size: 13px; line-height: 1.6; color: var(--gray-5b); margin-top: 2px; }
+  .foot { margin-top: 30px; font-size: 12px; line-height: 1.9; color: var(--gray-7f); max-width: 880px; }
+</style>
+</head>
+<body>
+
+<h1>GCEP 行事曆 Phase 1 — 前端 Demo</h1>
+<p class="lead">
+  照 Figma <b>Phase 1 頁</b>（UI Spec - New Messenger（Phase 1））做的可操作 Demo，共 <b>5 個 section、64 張稿</b>。<br>
+  三種視圖都用 <b>FullCalendar v6.1.19</b>，顏色與 class 沿用前端專案的變數命名（<code>$primary</code>、<code>$gray-f5</code>、<code>.selectBtn</code>…）。<br>
+  打開<b>規格模式</b>後，滑鼠移到元素上會顯示尺寸、顏色與行為規則；右側面板有稿旁規則、狀態記憶與 FullCalendar 的設定。
+</p>
+
+<div class="top">
+  <a href="app.html">開啟行事曆</a>
+  <a href="app.html?spec=1" class="ghost">行事曆＋規格模式</a>
+  <a href="notify.html" class="ghost">#G 通知</a>
+  <a href="mail.html" class="ghost">#H Email 模板</a>
+  <a href="資訊卡與清單定位原型.html" class="ghost">資訊卡與清單定位原型</a>
+</div>
+
+<div id="out"></div>
+
+<p class="foot">
+  假資料以「今天」為基準平移，任何一天打開都看得到同樣的情境。<br>
+  沒有設計稿的狀態（空狀態、載入中、失敗）一律不做。<br>
+  細節與交接說明看資料夾內的 <b>接手先讀.md</b>。
+</p>
+
+<script src="assets/icons.js"></script>
+<script src="assets/spec.js"></script>
+<script>
+(function () {
+  const S = window.SPEC.SCREENS;
+  const groups = [
+    ['#A 行事曆基本', '15 張', /^A/, c => `app.html?s=${c}`],
+    ['#B 建立與編輯行事曆', '1 張（Phase 1 只有篩選）', /^B/, c => `app.html?s=${c}`],
+    ['#C 建立與編輯活動', '29 張', /^C/, c => `app.html?s=${c}`],
+    ['#G 通知與邀請', '5 張＋1 張規則表', /^G/, c => c === 'G01' ? 'app.html?g01=1' : 'notify.html'],
+    ['#H Gmail 通知模板', '8 張', /^H/, c => `mail.html?s=${c}`],
+  ];
+  document.getElementById('out').innerHTML = groups.map(([title, count, re, href]) => {
+    const items = Object.entries(S).filter(([c]) => re.test(c));
+    return `<h2>${title}<small>${count}</small></h2><div class="grid">` +
+      items.map(([c, v]) => `<a class="card" href="${href(c)}"><b>#${c}</b><span>${v.name}</span></a>`).join('') +
+      '</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+/* GCEP 行事曆 Phase 1 Demo — 假資料
+ *
+ * 日期全部以「今天」為基準平移，任何一天打開都看得到同樣的情境。
+ * 只比版面與規則，不比文字內容（人名、行程名稱跟稿上不同是正常的）。
+ *
+ * organizer: 'me'    我建立的 → 卡片實心
+ *            'other' 別人建立、我是參與人 → 依 rsvp 決定樣式
+ * rsvp:      'yes' 參加 → 實心｜'maybe' 不確定、'none' 未回覆 → 線框｜'no' 不參加 → 線框＋刪除線
+ */
+(function () {
+  const ME = 'Johanna White';
+  const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  const at = (dayOffset, h = 0, m = 0) => {
+    const d = new Date(t0); d.setDate(d.getDate() + dayOffset); d.setHours(h, m, 0, 0); return d;
+  };
+  // 下週日（週視圖、日視圖「只有一筆」的情境放在下週，避開今天那一堆）
+  const nextSun = 7 - t0.getDay();
+
+  let seq = 0;
+  const ev = (title, start, end, o = {}) => ({
+    id: 'e' + (++seq), title, start, end,
+    allDay: !!o.allDay,
+    organizer: o.organizer || 'me',
+    organizerName: o.organizer === 'other' ? (o.by || 'Emma Tylor') : ME,
+    rsvp: o.rsvp || 'yes',
+    repeat: o.repeat || '不重複',
+    location: o.location || '',
+    note: o.note || '',
+    reminders: o.reminders || [{ when: '開始前', offset: '30分鐘' }],
+    participants: o.participants || null,     // null → 資訊卡用預設三人示範
+    myPerm: o.myPerm || '可編輯',
+  });
+  const allDay = (title, fromOffset, days, o = {}) =>
+    ev(title, at(fromOffset), at(fromOffset + days), { ...o, allDay: true });
+
+  const EVENTS = [];
+
+  /* ── 今天：全天 6 筆（#A08 全天列 2 筆＋還有 4 個） ── */
+  const longTitle = '機關學校月會：政府單位或學校的例行性集會，用於公告、動員、表揚。';
+  EVENTS.push(allDay(longTitle, 0, 1));
+  EVENTS.push(allDay(longTitle, 0, 1, { organizer: 'other', rsvp: 'yes' }));
+  EVENTS.push(allDay('員工健康檢查', 0, 1));
+  EVENTS.push(allDay('資安稽核日', 0, 1, { organizer: 'other', rsvp: 'none' }));
+  EVENTS.push(allDay('季度目標回顧', 0, 1));
+  EVENTS.push(allDay('辦公室消毒', 0, 1, { organizer: 'other', rsvp: 'yes', by: 'Leo Chen' }));
+
+  /* ── 今天 10:00 同一時段 15 筆（週視圖 5 筆＋「+10」、日視圖 12 筆＋「+3」） ── */
+  const names = ['週會', '設計師會議', '週例會', '行銷團隊會議', '業務會議', '產品同步', '招募面談',
+                 '客服檢討', '預算討論', '供應商會議', '品牌討論', '法務諮詢', '工程對焦', '營運週報', '教育訓練說明'];
+  names.forEach((n, i) => EVENTS.push(ev(n, at(0, 10), at(0, 11),
+    i === 3 ? { organizer: 'other', rsvp: 'maybe' } : i === 6 ? { organizer: 'other', rsvp: 'no' } : {})));
+
+  /* ── 今天 14:00 單筆 ── */
+  EVENTS.push(ev('週例會', at(0, 14), at(0, 15), {
+    repeat: '每週' + ['日','一','二','三','四','五','六'][t0.getDay()],
+    location: '竹北二廠 3F 會議室',
+    note: '請攜帶筆電',
+    participants: [
+      { name: ME, dept: '資訊管理處/系統維運部 - 組長', perm: '可編輯', owner: true, rsvp: 'yes' },
+      { name: 'Lily', dept: '資訊管理處/系統維運部 - 資深工程師', perm: '僅檢視', rsvp: 'no' },
+      { name: 'Molly', dept: '研發一處/產品規劃組 - 規劃師', perm: '可編輯', rsvp: 'none' },
+    ],
+  }));
+
+  /* ── 明天：三種卡片樣式（#A10 hover 用這格示範） ── */
+  EVENTS.push(ev('', at(1, 11), at(1, 12)));                                                       // 無標題 → 實心
+  EVENTS.push(ev('設計審查', at(1, 11), at(1, 12), {
+    organizer: 'other', rsvp: 'none', location: '竹北二廠', note: '請攜帶筆電', myPerm: '可編輯',
+    participants: [
+      { name: 'Emma Tylor', dept: '資訊管理處/系統維運部 - 處長', owner: true, rsvp: 'yes' },
+      { name: 'Lily', dept: '資訊管理處/系統維運部 - 資深工程師', rsvp: 'no' },
+      { name: ME, dept: '資訊管理處/系統維運部 - 組長', rsvp: 'none' },
+    ],
+  }));          // 未回覆 → 線框
+  EVENTS.push(ev('客戶簡報', at(1, 15), at(1, 16), { organizer: 'other', rsvp: 'no', myPerm: '僅檢視' }));   // 僅檢視 → 資訊卡沒有 ⋯           // 不參加 → 線框＋刪除線
+  EVENTS.push(ev('專案啟動會', at(1, 16), at(1, 17), { organizer: 'other', rsvp: 'maybe' }));      // 不確定 → 線框
+  EVENTS.push(ev('一對一面談', at(1, 17), at(1, 18)));
+  EVENTS.push(ev('月底結帳', at(1, 18), at(1, 19)));
+
+  /* ── 前天：長標題（卡片固定高度、裁切） ── */
+  EVENTS.push(ev('產品規劃討論：第三季行事曆模組上線前的最後一次跨部門確認會議', at(-2, 9, 30), at(-2, 11)));
+  EVENTS.push(ev('午餐會報', at(-2, 12), at(-2, 13), { organizer: 'other', rsvp: 'yes' }));
+
+  /* ── 下週：跨天全天長條（週一～週四）＋ 單筆 14:00 ── */
+  EVENTS.push(allDay('新人教育訓練', nextSun + 1, 4));
+  EVENTS.push(ev('週例會', at(nextSun + 1, 14), at(nextSun + 1, 15)));
+
+  /* ── 下週五 10:00 → 下下週二 12:00：有時間的跨週長條 ── */
+  EVENTS.push(ev('南部客戶拜訪', at(nextSun + 5, 10), at(nextSun + 9, 12), { organizer: 'other', rsvp: 'yes' }));
+
+  /* ── 上週：有時間的跨天（兩天） ── */
+  EVENTS.push(ev('年度盤點', at(nextSun - 12, 9), at(nextSun - 11, 18)));
+
+  /* ── 零星行程（讓月視圖不要太空） ── */
+  EVENTS.push(ev('設計系統分享', at(-5, 15), at(-5, 16)));
+  EVENTS.push(ev('部門聚餐', at(3, 18, 30), at(3, 20), { organizer: 'other', rsvp: 'maybe' }));
+  EVENTS.push(ev('季度規劃', at(12, 9), at(12, 12)));
+  EVENTS.push(ev('供應商評選', at(-20, 14), at(-20, 15)));
+  EVENTS.push(ev('年終規劃', at(25, 10), at(25, 11)));
+  EVENTS.push(allDay('國定假日', 18, 1, { organizer: 'other', rsvp: 'yes', by: '人資部' }));
+
+  window.DEMO_DATA = { ME, EVENTS, TODAY: t0, nextSun };
+})();
