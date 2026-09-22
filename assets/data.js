@@ -99,5 +99,30 @@
   EVENTS.push(ev('年終規劃', at(25, 10), at(25, 11)));
   EVENTS.push(allDay('國定假日', 18, 1, { organizer: 'other', rsvp: 'yes', by: '人資部' }));
 
+  /* ── 讓每一欄都有東西可以點（驗資訊卡定位用） ──
+     月視圖：本月每個星期欄至少有一格有行程卡
+     週視圖：本週每一天都有一筆 09:00 的行程 */
+  const monthFill = ['專案會議', '需求討論', '設計同步', '工程對焦', '進度追蹤', '客戶會議', '值班'];
+  const seen = new Set(EVENTS.filter(e => !e.allDay).map(e => e.start.toDateString()));
+  const firstOfMonth = new Date(t0.getFullYear(), t0.getMonth(), 1);
+  const daysInMonth = new Date(t0.getFullYear(), t0.getMonth() + 1, 0).getDate();
+  const filled = new Set();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const day = new Date(t0.getFullYear(), t0.getMonth(), d);
+    const wd = day.getDay();
+    if (filled.has(wd)) continue;
+    if (seen.has(day.toDateString())) { filled.add(wd); continue; }   // 那一欄本來就有行程了
+    const s = new Date(day); s.setHours(9, 0, 0, 0);
+    const e = new Date(day); e.setHours(10, 0, 0, 0);
+    EVENTS.push(ev(monthFill[wd], s, e));
+    filled.add(wd);
+  }
+  for (let i = 0; i < 7; i++) {                                        // 本週每一天 09:00
+    const day = new Date(t0); day.setDate(t0.getDate() - t0.getDay() + i);
+    const s = new Date(day); s.setHours(9, 0, 0, 0);
+    const e = new Date(day); e.setHours(10, 0, 0, 0);
+    if (!EVENTS.some(x => !x.allDay && +x.start === +s)) EVENTS.push(ev(monthFill[i], s, e));
+  }
+
   window.DEMO_DATA = { ME, EVENTS, TODAY: t0, nextSun };
 })();
