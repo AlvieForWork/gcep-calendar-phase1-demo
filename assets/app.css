@@ -8,7 +8,7 @@ body {
   font-family: var(--font);
   color: var(--gray-37);
   background: var(--dark-blue);
-  min-width: 456px;                 /* #A12：最小寬度 456px */
+  min-width: 800px;                 /* 頁面最小寬度（2026-09-21 定案，工程師既有規範） */
   display: flex;
   flex-direction: column;
   overflow: hidden;                 /* 網頁本身不捲，只有行事曆內部捲 */
@@ -75,7 +75,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .divider { height: 1px; background: var(--gray-eb); }
 .anchor { position: relative; }
 
-/* 窄版（#A12）：第一列 今天＋箭頭＋右側動作；日期與檢視選單換到第二列 */
+/* 窄版：工具列放不下時換行（最小寬度 800 下不會觸發，保留給更窄的情況） */
 .is-narrow .grp-a { order: 1; }
 .is-narrow .actions { order: 2; }
 .is-narrow .grp-b { order: 3; flex-basis: 100%; }

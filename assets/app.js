@@ -519,7 +519,6 @@
     if (state.pin) return state.pin;                       // 稿號選單指定時以它為準
     if (state.formCode && document.querySelector('.mask')) return state.formCode;
     if (!$('addMenu').hidden) return 'C01';
-    if ($('main').classList.contains('is-narrow')) return 'A12';
     if (!$('dp').hidden) return 'A09';
     if (!$('viewMenu').hidden) return 'A02';
     if (!$('filterMenu').hidden) return 'B01';
@@ -539,7 +538,6 @@
     A07: { view: 'week' }, A08: { view: 'day' },
     A09: { view: 'month', open: 'dp' },
     A10: { view: 'month', hover: 'cell' }, A11: { view: 'month', pop: 1, hover: 'pop' },
-    A12: { view: 'month', narrow: true },
     A13: { view: 'week', base: () => addDays(TODAY, nextSun + 1) },
     A14: { view: 'day', base: () => addDays(TODAY, nextSun + 1) },
     A16: { view: 'month', hover: 'bar' },

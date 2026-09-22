@@ -6,12 +6,13 @@
  *   5 都放不下 → 貼齊定位邊界右緣
  * 垂直：1、2、5 對齊參考對象置中；最後一律「保證完整顯示」，超出邊界就往內推。
  *
- * 定位邊界：左＝視窗左緣（可蓋過左側導覽）、右＝Main Content 右邊界、上下＝內容區。
+ * 定位邊界：四邊一律用內容區（Main Content）。2026-09-21 定案——頁面最小寬度是 800px，
+ * 內容區還有 721px，放得下 400 的卡片，所以不需要讓卡片蓋過左側導覽。
  */
 window.POS = (function () {
   function bounds() {
     const m = document.getElementById('main').getBoundingClientRect();
-    return { left: 0, right: m.right, top: m.top, bottom: m.bottom, contentLeft: m.left };
+    return { left: m.left, right: m.right, top: m.top, bottom: m.bottom, contentLeft: m.left };
   }
   const rectOf = el => {
     const r = el.getBoundingClientRect();
@@ -24,7 +25,7 @@ window.POS = (function () {
     const b = bounds();
     const space = {
       right: b.right - t.right,
-      left: t.left - b.contentLeft,      // 判斷用內容區左緣（Figma 稿即此結果）
+      left: t.left - b.left,             // 四邊都用內容區
       above: t.top - b.top,
       below: b.bottom - t.bottom,
     };
@@ -37,7 +38,7 @@ window.POS = (function () {
 
     const pushed = [];
     if (left + W > b.right) { left = b.right - W; pushed.push('右'); }
-    if (left < b.left) { left = b.left; pushed.push('左'); }       // 左邊界＝視窗左緣
+    if (left < b.left) { left = b.left; pushed.push('左'); }
     if (top + H > b.bottom) { top = b.bottom - H; pushed.push('下'); }
     if (top < b.top) { top = b.top; pushed.push('上'); }
 
