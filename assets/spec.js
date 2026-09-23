@@ -222,7 +222,7 @@ window.SPEC = (function () {
     timeerr:   { t: '時間錯誤訊息（#C30／#C31）', rows: [['文字', '12 Regular #FF5040'], ['圖示', 'alert 16×16 #FF5252（與文字的 #FF5040 不同色）'], ['位置', '開始時間那一列下方 4px'], ['欄位底色', '#FFE5D9（原為 $gray-f5）']], rule: '開始時間晚於結束時間時出現；相等是合法的 0 分鐘活動，不算錯' },
     formdate:  { t: '日期 pill', rows: [['選單', 'Picker_calender（同 #A09）']], warn: '前端用現成的 SelectTime（vue-datepicker-next）' },
     allday:    { t: '全天', rows: [['勾選框', '18 圓形'], ['字', '14 Regular $gray-37']], rule: '勾選後時間欄合併為「時間 開始日期 ～ 結束日期」；取消後拆回兩行並帶入預設時分' },
-    members:   { t: '參與人', rows: [['列高', '72（size/member-row-height）'], ['頭像', '40（size/avatar-member）'], ['姓名', '16 Regular $gray-37'], ['部門', '14 Regular $gray-5b'], ['分隔線', '1px $gray-eb']], rule: '主辦人固定第一個、皇冠標記，其餘依加入順序；刪除 icon 只在 hover 顯示，建立者不顯示' },
+    members:   { t: '參與人', rows: [['列高', '72（size/member-row-height）'], ['頭像', '40（size/avatar-member）'], ['姓名', '16 Regular $gray-37'], ['部門', '14 Regular $gray-5b'], ['分隔線', '1px $gray-eb']], rule: '主辦人固定第一個、皇冠標記，其餘依加入順序；整列沒有 hover 底色，只有刪除 icon 在 hover 時出現，建立者不顯示' },
     perm:      { t: '權限下拉', rows: [['選項', '僅檢視 / 可編輯']], rule: '僅檢視只能看；可編輯可以改活動' },
     adv:       { t: '進階設定', rows: [['字', '16 Semibold $primary＋三角形 icon']], rule: '預設收合；展開後顯示通知、地點、備註（Phase 1 沒有設備）' },
     notify:    { t: '通知列', rows: [['內容', '時機 pill＋時間 pill＋刪除 icon']], rule: '最多 5 組；滿 5 組隱藏「＋新增通知」；第一組不可刪；儲存後相同組合去重' },
