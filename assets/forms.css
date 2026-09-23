@@ -135,13 +135,14 @@
   min-width: 100%; max-width: 100%;
   background: var(--white); border: 1px solid var(--gray-eb);
   border-radius: var(--cal-radius-menu); box-shadow: var(--gap-shadow-pop);
-  padding: 5px 0;                                        /* space/menu-pad-y */
+  padding: 6px;                                          /* 稿：選單四邊內距 6，hover 不貼邊 */
   max-height: 232px; overflow-y: auto;
 }
 .dd-menu.w-auto { max-width: none; white-space: nowrap; }
 .dd-menu button {
   display: block; width: 100%; height: var(--cal-menu-row-height);
-  padding: 0 16px;                                       /* space/menu-pad-x */
+  padding: 0 10px;                                       /* 加上容器的 6 = 文字離選單邊 16，位置不變 */
+  border-radius: var(--cal-radius-menu);
   text-align: left; font-size: 14px; line-height: 21px; color: var(--gray-5b);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
@@ -206,11 +207,11 @@
 /* 更多選單（#C17） */
 .more-menu {
   position: absolute; z-index: 40; top: 36px; right: 44px;
-  min-width: 74px; padding: 5px 0;
+  min-width: 74px; padding: 6px;
   background: var(--white); border: 1px solid var(--gray-eb);
   border-radius: var(--cal-radius-menu); box-shadow: var(--gap-shadow-pop);
 }
-.more-menu button { display: block; width: 100%; height: var(--cal-menu-row-height); padding: 0 16px; text-align: left; font-size: 14px; color: var(--gray-5b); }
+.more-menu button { display: block; width: 100%; height: var(--cal-menu-row-height); padding: 0 10px; border-radius: var(--cal-radius-menu); text-align: left; font-size: 14px; color: var(--gray-5b); }
 .more-menu button:hover { background: var(--gray-f5); }
 
 /* ═════════ Alert（#C11／#C21／#C22／#C20） ═════════ */
@@ -267,9 +268,9 @@
 .picker .prow .grow { flex: 1; min-width: 0; }
 
 /* ═════════ #C01 新增行程下拉 ═════════ */
-.add-menu { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 74px; padding: 5px 0;
+.add-menu { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 74px; padding: 6px;
   background: var(--white); border: 1px solid var(--gray-eb); border-radius: var(--cal-radius-menu); box-shadow: var(--gap-shadow-pop); }
-.add-menu button { display: block; width: 100%; height: var(--cal-menu-row-height); padding: 0 16px; text-align: left; font-size: 14px; color: var(--gray-5b); }
+.add-menu button { display: block; width: 100%; height: var(--cal-menu-row-height); padding: 0 10px; border-radius: var(--cal-radius-menu); text-align: left; font-size: 14px; color: var(--gray-5b); }
 .add-menu button:hover { background: var(--gray-f5); }
 
 /* ═════════ #G01 通知_提示框 ═════════ */

@@ -218,7 +218,7 @@ window.SPEC = (function () {
                  warn: '稿註明「樣式僅作為示意」→ 前端用現成 SelectTime（vue-datepicker-next）' },
     formmodal: { t: '建立／編輯活動 Modal', rows: [['寬', '600 固定（size/modal-width）'], ['高', 'auto、max-height 90vh，內容區捲動'], ['圓角', '8（radius/modal）'], ['標題列', '高 40、底 $gray-f5、16 Regular $gray-5b'], ['內距', '上 20／左右 24／下 24'], ['欄位列距', '28（space/field-gap）'], ['標籤欄', '寬 96＋間距 20（控制項起點 116）'], ['頁尾', '高 66、上方分隔線 1px $gray-dc、左右內縮 16']] },
     input:     { t: '輸入框', rows: [['高', '36（size/input-height）'], ['圓角', '20（radius/input）'], ['外框', '1px $gray-c9'], ['內距', '6 / 16，比欄位區再內縮 16'], ['字', '16 Regular $gray-37，placeholder $gray-a7'], ['字數', '12 Regular $gray-7f']], rule: '標題 50 字、地點 200 字、備註 50 字' },
-    formsel:   { t: '下拉 pill', rows: [['元件', '現成 .selectBtn'], ['高', '37（size/pill-height）'], ['選單', '每列 33、左右內距 16、圓角 6'], ['hover', '選項底 $gray-f5']], rule: '寬度自適應內容，過長以「…」省略；一次只開一個下拉（日期 Picker 與各選單互斥）；時間選單兩邊各自獨立，不互相過濾選項' },
+    formsel:   { t: '下拉 pill', rows: [['元件', '現成 .selectBtn'], ['高', '37（size/pill-height）'], ['選單', '四邊內距 6'], ['選項', '高 33、圓角 6、文字離選單邊 16'], ['hover', '選項底 $gray-f5，左右各內縮 6 不貼邊']], rule: '寬度自適應內容，過長以「…」省略；一次只開一個下拉（日期 Picker 與各選單互斥）；時間選單兩邊各自獨立，不互相過濾選項' },
     timeerr:   { t: '時間錯誤訊息（#C30／#C31）', rows: [['文字', '12 Regular #FF5040'], ['圖示', 'alert 16×16 #FF5252（與文字的 #FF5040 不同色）'], ['位置', '開始時間那一列下方 4px'], ['欄位底色', '#FFE5D9（原為 $gray-f5）']], rule: '開始時間晚於結束時間時出現；相等是合法的 0 分鐘活動，不算錯' },
     formdate:  { t: '日期 pill', rows: [['選單', 'Picker_calender（同 #A09）']], warn: '前端用現成的 SelectTime（vue-datepicker-next）' },
     allday:    { t: '全天', rows: [['勾選框', '18 圓形'], ['字', '14 Regular $gray-37']], rule: '勾選後時間欄合併為「時間 開始日期 ～ 結束日期」；取消後拆回兩行並帶入預設時分' },
