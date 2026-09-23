@@ -108,7 +108,7 @@
 .member-row .dept { font-size: 14px; line-height: 21px; color: var(--gray-5b); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .member-row .perm { flex: 0 0 auto; }
 .member-row .del { flex: 0 0 20px; line-height: 0; visibility: hidden; }  /* #C25：hover 才顯示 */
-.member-row:hover .del { visibility: visible; }
+.member-row:not(.is-owner):hover .del { visibility: visible; }
 .member-row .del.locked { visibility: hidden !important; }               /* 建立者不顯示刪除 */
 
 /* 進階設定 */
@@ -289,8 +289,9 @@
 .more-menu button:hover,
 .add-menu button:hover { background: var(--gray-f5); }      /* 下拉選單的每個選項 */
 
-/* 參與人列不做 hover 底色（2026-09-23 Alvie 指示）；
-   只有右側的刪除 ✕ 仍是 hover 才出現（#C25） */
+/* 參與人列：hover 底色 #000000 3%，同時顯示右側刪除 ✕（筆記 9761:197439）。
+   建立者那一列不能刪，所以也不給 hover 反應（2026-09-23） */
+.member-row:not(.is-owner):hover { background: rgba(0, 0, 0, .03); }
 
 /* 資訊卡的是／否／不確定：只有未選中的有 hover（筆記 9789:232814） */
 .rsvp button:not([aria-pressed="true"]):hover { background: var(--gray-f5); }

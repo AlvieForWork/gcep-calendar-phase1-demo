@@ -288,7 +288,7 @@ window.Forms = (function () {
       head.appendChild(add);
       fMembers.appendChild(head);
       for (const p of st.participants) {
-        const row = el('div', 'member-row');
+        const row = el('div', 'member-row' + (p.owner ? ' is-owner' : ''));
         row.innerHTML = `<span class="ava"><span class="pic">${I.userPic}</span>${p.owner ? `<span class="crown">${I.crown}</span>` : ''}</span>
           <span class="info"><span class="nm">${p.name}</span><div class="dept">${p.dept}</div></span>`;
         if (!p.owner) {
