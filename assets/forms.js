@@ -228,10 +228,12 @@ window.Forms = (function () {
       if (st.allDay) {
         const row = el('div', 'time-row');
         row.append(
-          datePill(st.start, d => { st.start = d; if (st.end < st.start) st.end = new Date(d); renderTime(); sync(); }),
+          datePill(st.start, d => { st.start = d; renderTime(); sync(); }),   // 不再自動把結束拉回來，錯了就標紅（#C32）
           el('span', 'tilde', '～'),
-          datePill(st.end, d => { st.end = d; sync(); }));
+          datePill(st.end, d => { st.end = d; renderTime(); sync(); }));
         timeBox.appendChild(row);
+        timeBox.appendChild(errLine);
+        markTimeError();
         return;
       }
       const sRow = el('div', 'time-row');
@@ -259,7 +261,10 @@ window.Forms = (function () {
     }
 
     /* 開始晚於結束（#C30／#C31）——日期與時分合起來比，相等是合法的 0 分鐘活動 */
-    function timeInvalid() { return !st.allDay && +st.start > +st.end; }
+    function timeInvalid() {
+      return st.allDay ? +sod(st.start) > +sod(st.end)      // 全天只比日期（#C32）
+                       : +st.start > +st.end;               // 非全天：日期與時分合起來比（#C30／#C31）
+    }
     function markTimeError() {
       const bad = timeInvalid();
       [timeBox, endBox].forEach(box => box.querySelectorAll('.time-row').forEach(r => r.classList.toggle('is-err', bad)));
@@ -649,7 +654,12 @@ window.Forms = (function () {
       if (!allDay && +sod(end) > +sod(start)) { end = new Date(start); end.setHours(23, 45, 0, 0); }
       /* 規格模式用：直接開在錯誤狀態（#C30 同一天時分顛倒、#C31 結束日期早一天） */
       if (opts.bad === 'time') { start = new Date(d); start.setHours(11, 0, 0, 0); end = new Date(d); end.setHours(10, 0, 0, 0); }
-      if (opts.bad === 'date') { start = new Date(d); start.setHours(11, 0, 0, 0); end = addDays(new Date(start), -1); }
+      if (opts.bad === 'date') {
+        start = allDay ? addDays(sod(d), 1) : new Date(d);
+        if (!allDay) start.setHours(11, 0, 0, 0);
+        end = addDays(sod(start), -1);
+        if (!allDay) end.setHours(11, 0, 0, 0);
+      }
       return openForm('create', { title: '', start, end, allDay });
     },
     openEdit: ev => openForm('edit', ev),
