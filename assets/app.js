@@ -575,6 +575,8 @@
     C27: { view: 'month', form: 'create', picker: true },
     C28: { view: 'month', form: 'create', picker: true },
     C29: { view: 'month', form: 'create', allDay: true },
+    C30: { view: 'month', form: 'create', bad: 'time' },
+    C31: { view: 'month', form: 'create', bad: 'date' },
 
     /* #G01 在行事曆頁；#G02～#G05 在 notify.html；#H 在 mail.html */
     G01: { view: 'month', remind: true },
@@ -642,7 +644,7 @@
           i.dispatchEvent(new Event('input', { bubbles: true }));
         }, 60);
       } else {
-        Forms.openCreate(state.base, { allDay: !!p.allDay });
+        Forms.openCreate(state.base, { allDay: !!p.allDay, bad: p.bad });
       }
       setTimeout(() => {
         const q = sel => document.querySelector(sel);

@@ -218,9 +218,9 @@ window.Forms = (function () {
       code(st.allDay ? 'C29' : (isEdit ? 'C18' : 'C03'));
     };
 
-    function endOptionsFor(list, isHour) {
-      return () => list;
-    }
+    const errLine = el('div', 'time-err', `<span class="ic">${I.alert}</span>開始時間不可大於結束時間`);
+    errLine.dataset.spec = 'timeerr';
+    errLine.hidden = true;
     function renderTime() {
       timeBox.innerHTML = ''; endBox.innerHTML = '';
       fTime.querySelector('.label').textContent = st.allDay ? '時間' : '開始時間';
@@ -238,28 +238,32 @@ window.Forms = (function () {
       sRow.append(
         datePill(st.start, d => {
           const k = new Date(d); k.setHours(st.start.getHours(), st.start.getMinutes(), 0, 0);
-          const diff = +st.end - +st.start; st.start = k; st.end = new Date(+k + Math.max(diff, 0));
+          st.start = k;                                   // 只改開始，不動結束（#C31 就是這樣才做得出來）
           renderTime(); sync();
         }),
-        selectPill(pad(st.start.getHours()), HOURS, v => { st.start.setHours(+v); fixEnd(); renderTime(); sync(); }),
-        selectPill(pad(st.start.getMinutes()), MINS, v => { st.start.setMinutes(+v); fixEnd(); renderTime(); sync(); }));
+        selectPill(pad(st.start.getHours()), HOURS, v => { st.start.setHours(+v); renderTime(); sync(); }),
+        selectPill(pad(st.start.getMinutes()), MINS, v => { st.start.setMinutes(+v); renderTime(); sync(); }));
       timeBox.appendChild(sRow);
+      timeBox.appendChild(errLine);                       // 錯誤訊息掛在「開始時間」這一列下方
 
       const eRow = el('div', 'time-row');
-      const sameDay = +sod(st.end) === +sod(st.start);
-      const hourOpts = HOURS.filter(h => !sameDay || +h.value >= st.start.getHours());
-      const minOpts = MINS.filter(mm => !sameDay || st.end.getHours() > st.start.getHours() || +mm.value >= st.start.getMinutes());
-      eRow.append(
+      eRow.append(                                        // 選項固定 00:00～23:45，不依開始時間增減
         datePill(st.end, d => {
           const k = new Date(d); k.setHours(st.end.getHours(), st.end.getMinutes(), 0, 0);
-          st.end = k; fixEnd(); renderTime(); sync();
+          st.end = k; renderTime(); sync();
         }),
-        selectPill(pad(st.end.getHours()), hourOpts, v => { st.end.setHours(+v); fixEnd(); renderTime(); sync(); }),
-        selectPill(pad(st.end.getMinutes()), minOpts, v => { st.end.setMinutes(+v); fixEnd(); renderTime(); sync(); }));
+        selectPill(pad(st.end.getHours()), HOURS, v => { st.end.setHours(+v); renderTime(); sync(); }),
+        selectPill(pad(st.end.getMinutes()), MINS, v => { st.end.setMinutes(+v); renderTime(); sync(); }));
       endBox.appendChild(eRow);
+      markTimeError();
     }
-    function fixEnd() {                                   // 結束早於開始 → 拉回開始時間（允許 0 分鐘活動）
-      if (st.end < st.start) st.end = new Date(st.start);
+
+    /* 開始晚於結束（#C30／#C31）——日期與時分合起來比，相等是合法的 0 分鐘活動 */
+    function timeInvalid() { return !st.allDay && +st.start > +st.end; }
+    function markTimeError() {
+      const bad = timeInvalid();
+      [timeBox, endBox].forEach(box => box.querySelectorAll('.time-row').forEach(r => r.classList.toggle('is-err', bad)));
+      errLine.hidden = !bad;
     }
 
     /* — 重複 — */
@@ -352,8 +356,12 @@ window.Forms = (function () {
     /* 確定按鈕：編輯時未修改 → disabled（SRS 6.3 / #C18 vs #C19） */
     function sync() {
       const changed = JSON.stringify(st) !== snapshot;
-      okBtn.disabled = isEdit && !changed;
-      if (isEdit) code(changed ? 'C19' : 'C18');
+      const bad = timeInvalid();
+      markTimeError();
+      okBtn.disabled = (isEdit && !changed) || bad;       // 紅字狀態一律存不了
+      okBtn.classList.toggle('is-err', bad);
+      if (bad) code('C30');
+      else if (isEdit) code(changed ? 'C19' : 'C18');
     }
     sync();
 
@@ -639,6 +647,9 @@ window.Forms = (function () {
       else { const n = nextSlot(new Date()); start = sod(d); start.setHours(n.getHours(), n.getMinutes(), 0, 0); }
       end = allDay ? addDays(sod(d), 1) : new Date(+start + 3600e3);
       if (!allDay && +sod(end) > +sod(start)) { end = new Date(start); end.setHours(23, 45, 0, 0); }
+      /* 規格模式用：直接開在錯誤狀態（#C30 同一天時分顛倒、#C31 結束日期早一天） */
+      if (opts.bad === 'time') { start = new Date(d); start.setHours(11, 0, 0, 0); end = new Date(d); end.setHours(10, 0, 0, 0); }
+      if (opts.bad === 'date') { start = new Date(d); start.setHours(11, 0, 0, 0); end = addDays(new Date(start), -1); }
       return openForm('create', { title: '', start, end, allDay });
     },
     openEdit: ev => openForm('edit', ev),

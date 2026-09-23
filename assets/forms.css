@@ -46,7 +46,7 @@
 .btn-cancel { color: var(--gray-91); border-radius: 100px; }
 .btn-primary { background: var(--primary); color: var(--white); }
 .btn-primary:hover { background: var(--positive); }          /* #C25 */
-.btn-primary:disabled { opacity: .4; cursor: default; }
+.btn-primary:disabled { opacity: .5; cursor: default; }   /* 稿上是 Button/Fill/Normal 整顆 opacity 0.5，底色仍是 $primary */
 .btn-primary:disabled:hover { background: var(--primary); }
 
 /* ═════════ 建立／編輯活動（#C02／#C03） ═════════ */
@@ -75,6 +75,11 @@
 /* 時間列 */
 .time-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .time-row .tilde { color: var(--gray-5b); font-size: 14px; }
+
+/* 開始晚於結束（#C30／#C31）：兩列的下拉都轉粉底，訊息掛在開始時間下方 */
+.time-row.is-err .selectBtn { background: var(--err-field-bg); }
+.time-err { display: flex; align-items: center; gap: 2px; margin-top: 4px; font-size: 12px; line-height: 17px; color: var(--err-text); }
+.time-err .ic { display: inline-flex; width: 16px; height: 16px; }
 /* 結束時間＋全天 ＝ 一組，組內距 16（量自 #C03 Frame 1000001077） */
 .end-group { display: flex; flex-direction: column; gap: 16px; }
 .allday-row { display: flex; align-items: center; gap: 10px; }

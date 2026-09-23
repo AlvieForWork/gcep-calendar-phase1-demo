@@ -44,6 +44,8 @@
   --gap-hover-overlay: rgba(0, 0, 0, .1);  /* 實心卡片 hover 疊色（#A10 筆記） */
   --gap-hover-soft: rgba(0, 0, 0, .05);    /* 圓形 icon 按鈕 hover（#A16 筆記） */
   --gap-shadow-pop: 0 1px 4px rgba(0, 0, 0, .2);  /* 下拉／清單視窗陰影 */
+  --err-field-bg: #ffe5d9;                 /* 欄位錯誤底色（#C30／#C31） */
+  --err-text: #ff5040;                     /* 錯誤訊息文字（#C30／#C31） */
 
   /* ── 版面（量自 #A01） ── */
   --shell-pad-top: 42px;
