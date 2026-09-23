@@ -380,6 +380,15 @@ window.Forms = (function () {
     function askNotify() { confirmNotify(sent => save(sent)); }
     function save(sent) {
       const list = window.DEMO_DATA.EVENTS;
+      /* 通知規則：編輯期間可以重複，儲存時相同的「時機＋時間」只留一組 */
+      const before = st.reminders.length;
+      const seen = new Set();
+      st.reminders = st.reminders.filter(r => {
+        const k = r.when + '|' + r.offset;
+        if (seen.has(k)) return false;
+        seen.add(k); return true;
+      });
+      if (before > st.reminders.length) log(`通知去重：${before} 組 → ${st.reminders.length} 組（相同的時機＋時間只留一組），再開啟 Modal 看到的是去重後的結果`);
       if (isEdit) Object.assign(ev, { title: st.title, start: st.start, end: st.end, allDay: st.allDay, repeat: st.repeat, location: st.location, note: st.note, reminders: st.reminders, participants: st.participants });
       else list.push({ id: 'n' + Date.now(), title: st.title, start: st.start, end: st.end, allDay: st.allDay, organizer: 'me', organizerName: window.DEMO_DATA.ME, rsvp: 'yes', repeat: st.repeat, location: st.location, note: st.note, reminders: st.reminders, participants: st.participants });
       closeMask(m);
