@@ -373,9 +373,16 @@ window.Forms = (function () {
     modal.querySelector('.modal-close').onclick = () => closeMask(m);
     modal.querySelector('.btn-cancel').onclick = () => { log('取消 → 關閉視窗，暫存的變更不生效'); closeMask(m); };
     okBtn.onclick = () => {
-      if (isEdit && st.repeat !== '不重複') {              // #C20：重複事件先選範圍
+      /* #C20：重複事件按確定才問套用範圍。
+         但改的如果是「重複」這一欄本身（例如每週一改成每週五），就不問，直接改整組——
+         改重複規則本來就不可能只改一筆（2026-09-23 更新）。 */
+      const repeatChanged = st.repeat !== (ev.repeat || '不重複');
+      if (isEdit && st.repeat !== '不重複' && !repeatChanged) {
         openRange('edit', scope => { log(`編輯範圍：${scope}`); askNotify(); });
-      } else askNotify();
+      } else {
+        if (isEdit && repeatChanged) log(`改的是「重複」欄位（${ev.repeat || '不重複'} → ${st.repeat}）→ 不問套用範圍，直接改整組`);
+        askNotify();
+      }
     };
     function askNotify() { confirmNotify(sent => save(sent)); }
     function save(sent) {
