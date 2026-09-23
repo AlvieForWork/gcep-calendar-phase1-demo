@@ -459,7 +459,7 @@
     Forms.openInfo(raw, anchor);
   }
 
-  /* ════════════ 窄版（#A12） ════════════ */
+  /* ════════════ 工具列放不下時換行（視窗接近最小寬度 800 時） ════════════ */
   function detectNarrow() {
     const row = $('datenavRow');
     const g = row.children;
@@ -594,7 +594,6 @@
     Forms.close();
     closeAll();
     clearForceHover();
-    $('shell').classList.toggle('is-a12', !!p.narrow);
     if (state.left) enterCalendar();
     state.base = p.base ? sod(p.base()) : today();
     if (state.view !== p.view) { state.view = p.view; store.setView(p.view); cal.changeView(FC_VIEW[p.view], state.base); }
@@ -668,7 +667,6 @@
     if (!state.pin) return;
     state.pin = null;
     clearForceHover();
-    if ($('shell').classList.contains('is-a12')) { $('shell').classList.remove('is-a12'); }
     $('dbScreen').value = '';
   }
 

@@ -24,7 +24,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   display: flex;
   padding: 8px 8px 8px 0;
 }
-.shell.is-a12 { max-width: 456px; }   /* ?s=A12：把畫面縮到最小寬度 */
 
 /* ── 左側導覽列（位置照 #A01 量） ── */
 .nav { position: relative; flex: 0 0 71px; overflow: hidden; }   /* 視窗拉矮時不撐高網頁 */
