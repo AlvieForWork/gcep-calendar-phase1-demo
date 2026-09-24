@@ -126,5 +126,19 @@
     if (!EVENTS.some(x => !x.allDay && +x.start === +s)) EVENTS.push(ev(monthFill[i], s, e));
   }
 
+  /* ── 月視圖第一排與最後一排各放一天 4 筆（工程師 9/24 問的定位情境） ──
+     這兩排的清單視窗一定會超出內容區上／下緣，用來看「保證完整顯示」怎麼往內推。 */
+  const gridFirst = new Date(t0.getFullYear(), t0.getMonth(), 1);
+  gridFirst.setDate(gridFirst.getDate() - gridFirst.getDay());        // 月曆格第一格（上個月的尾巴）
+  const gridLast = new Date(gridFirst); gridLast.setDate(gridFirst.getDate() + 41);   // 第六排最後一格
+  [[gridFirst, 2, '第一排'], [gridLast, -2, '最後一排']].forEach(([base, shift, where]) => {
+    const day = new Date(base); day.setDate(base.getDate() + shift);  // 避開最角落，放在該排中間
+    ['09:00 晨會', '11:00 需求訪談', '14:00 設計審查', '16:00 週報'].forEach((t, i) => {
+      const s = new Date(day); s.setHours(9 + i * 2, 0, 0, 0);
+      const e = new Date(s); e.setHours(s.getHours() + 1);
+      EVENTS.push(ev(t.slice(6), s, e, { note: `月曆${where}，用來驗清單視窗的垂直定位` }));
+    });
+  });
+
   window.DEMO_DATA = { ME, EVENTS, TODAY: t0, nextSun };
 })();

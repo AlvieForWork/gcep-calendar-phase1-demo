@@ -436,13 +436,18 @@
       : (linkEl && (linkEl.closest('td.fc-daygrid-day') || linkEl.closest('td.fc-timegrid-col'))) || linkEl;
     const from = inAllDay ? '全天列的「還有 N 個」按鈕'
       : (target.classList && target.classList.contains('fc-daygrid-day')) ? '日期格' : '時間格';
-    const pos = window.POS.place(target, pop.offsetWidth || 260, pop.offsetHeight);
-    pop.style.left = pos.left + 'px';
-    pop.style.top = pos.top + 'px';
+    const put = () => {
+      const r = window.POS.place(target, pop.offsetWidth || 260, pop.offsetHeight);
+      pop.style.left = r.left + 'px';
+      pop.style.top = r.top + 'px';
+      return r;
+    };
+    const pos = put();
     popAnchor = { el: target, from };             // 記住觸發清單的那個格子／按鈕，供「從清單點一筆」時當參考對象
     const n = linkEl && linkEl.querySelector('.ml');
     const label = !n ? '' : linkEl.classList.contains('fc-timegrid-more-link') ? '+' + n.dataset.n : '還有' + n.dataset.n + '個';
     log(`點「${label}」→ <span class="val">${ymd(date)}</span> 的完整行程清單（${list.children.length} 筆）｜${window.POS.describe(pos, '清單視窗', from)}`);
+    put();   // 事件紀錄可能讓下方 DEMO 列換行、內容區變矮 → 用新的邊界再算一次
     syncSpec();
   }
   function closePop() { $('pop').hidden = true; popDate = null; }

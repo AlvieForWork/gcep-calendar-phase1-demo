@@ -653,10 +653,15 @@ window.Forms = (function () {
       from = '（無參考對象）';
     }
     card.style.position = 'fixed';
-    const p = window.POS.place(target, card.offsetWidth || 400, card.offsetHeight);
-    card.style.left = p.left + 'px';
-    card.style.top = p.top + 'px';
+    const put = () => {
+      const r = window.POS.place(target, card.offsetWidth || 400, card.offsetHeight);
+      card.style.left = r.left + 'px';
+      card.style.top = r.top + 'px';
+      return r;
+    };
+    const p = put();
     log(window.POS.describe(p, '資訊卡', from));
+    put();   // 事件紀錄可能讓下方 DEMO 列換行、內容區變矮 → 用新的邊界再算一次
   }
 
   return {
