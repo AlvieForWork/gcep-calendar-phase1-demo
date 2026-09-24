@@ -126,19 +126,22 @@
     if (!EVENTS.some(x => !x.allDay && +x.start === +s)) EVENTS.push(ev(monthFill[i], s, e));
   }
 
-  /* ── 月視圖第一排與最後一排各放一天 4 筆（工程師 9/24 問的定位情境） ──
-     這兩排的清單視窗一定會超出內容區上／下緣，用來看「保證完整顯示」怎麼往內推。 */
+  /* ── 月曆每一格都放到「還有 N 個」會出現（2026-09-24 Alvie 指示：想看實際長相） ──
+     筆數刻意有多有少（3～10 筆），這樣清單視窗的短版與滿版（超過 314 就內部捲動）都看得到。
+     已經有行程的那一天只補到目標筆數，不覆蓋原本的情境資料。 */
+  const fillTitles = ['晨會', '需求訪談', '設計審查', '週報', '跨部門同步', '客戶回訪', '技術評估', '驗收會議', '例行追蹤', '結案討論'];
   const gridFirst = new Date(t0.getFullYear(), t0.getMonth(), 1);
-  gridFirst.setDate(gridFirst.getDate() - gridFirst.getDay());        // 月曆格第一格（上個月的尾巴）
-  const gridLast = new Date(gridFirst); gridLast.setDate(gridFirst.getDate() + 41);   // 第六排最後一格
-  [[gridFirst, 2, '第一排'], [gridLast, -2, '最後一排']].forEach(([base, shift, where]) => {
-    const day = new Date(base); day.setDate(base.getDate() + shift);  // 避開最角落，放在該排中間
-    ['09:00 晨會', '11:00 需求訪談', '14:00 設計審查', '16:00 週報'].forEach((t, i) => {
-      const s = new Date(day); s.setHours(9 + i * 2, 0, 0, 0);
-      const e = new Date(s); e.setHours(s.getHours() + 1);
-      EVENTS.push(ev(t.slice(6), s, e, { note: `月曆${where}，用來驗清單視窗的垂直定位` }));
-    });
-  });
+  gridFirst.setDate(gridFirst.getDate() - gridFirst.getDay());          // 月曆格第一格
+  for (let i = 0; i < 42; i++) {
+    const day = new Date(gridFirst); day.setDate(gridFirst.getDate() + i);
+    const target = 3 + (i % 8);                                          // 3～10 筆
+    const already = EVENTS.filter(e => !e.allDay && e.start.toDateString() === day.toDateString()).length;
+    for (let k = already; k < target; k++) {
+      const s2 = new Date(day); s2.setHours(8 + k, 0, 0, 0);
+      const e2 = new Date(s2); e2.setHours(s2.getHours() + 1);
+      EVENTS.push(ev(fillTitles[k % fillTitles.length], s2, e2));
+    }
+  }
 
   window.DEMO_DATA = { ME, EVENTS, TODAY: t0, nextSun };
 })();
