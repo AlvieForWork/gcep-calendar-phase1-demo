@@ -246,7 +246,7 @@ window.SPEC = (function () {
   const FC_PARTS = [
     { sel: '.fc-daygrid-more-link', t: '「還有 N 個」', rows: [['尺寸', '高 20、padding 2 / 4、圓角 4'], ['字', '12 Medium $gray-7f'], ['hover', '底 $gray-f5（#A10）']],
       rule: '點擊 → 開啟當日完整行程清單' },
-    { sel: '.fc-timegrid-more-link', t: '「+N」', rows: [['尺寸', '寬 23、高同卡片、圓角 4'], ['底／字', '$white／12 Medium $gray-7f']],
+    { sel: '.fc-timegrid-more-link', t: '「+N」', rows: [['尺寸', '內距 2 / 4、最小寬 23、高同卡片、圓角 4'], ['底／字', '$white／12 Medium $gray-7f']],
       rule: '週視圖同時段超過 5 筆、天視圖超過 12 筆時收成「+N」' },
     { sel: '.fc-timegrid-event', t: '時段卡片', rows: [['字', '12 Medium，第一行起訖時間、第二行標題'], ['padding', '2 / 4，圓角 4'], ['疊放', '第二張起左移重疊，加 1px 白框']] },
     { sel: '.fc-daygrid-block-event', t: '跨天長條', rows: [['尺寸', '高 20，左右內縮 4'], ['跨週', '斷開處圓角改平']],
